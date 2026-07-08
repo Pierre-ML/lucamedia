@@ -1,0 +1,50 @@
+<section class="rise brutalist-card p-5" style="animation-delay: 60ms">
+	<h2 class="text-xs font-extrabold tracking-wider uppercase text-ink-200 border-b-2 border-black pb-3">
+		AJOUTER À LA FILE D'ATTENTE //
+	</h2>
+	<form id="add-form" class="mt-4 space-y-4">
+		<div>
+			<label for="add-urls" class="label">
+				Liens de capture .m3u8 <span class="font-normal lowercase text-ink-500">— un par ligne</span>
+			</label>
+			<textarea
+				id="add-urls"
+				rows="4"
+				required
+				placeholder="https://exemple.com/video/master.m3u8"
+				class="field resize-y font-mono text-xs leading-relaxed"
+				style="font-family: var(--font-mono);"></textarea>
+		</div>
+		
+		<div>
+			<label for="add-filename" class="label">
+				Désignation du fichier <span class="font-normal lowercase text-ink-500">— optionnel</span>
+			</label>
+			<input id="add-filename" type="text" placeholder="video_capture_01" class="field" />
+		</div>
+		
+		<label
+			for="add-uqload"
+			class="switch-container rounded border-2 border-black bg-black/20 hover:border-accent px-3.5 py-3 transition-all duration-200"
+		>
+			<div class="min-w-0 pr-3">
+				<span class="text-xs font-bold uppercase tracking-wider text-ink-200 block">Optimisation Uqload</span>
+				<span class="text-[9px] text-ink-500 font-bold block mt-0.5">// AJOUT REFERER</span>
+			</div>
+			<div class="relative shrink-0">
+				<input id="add-uqload" type="checkbox" class="switch-input" />
+				<div class="switch-slider"></div>
+			</div>
+		</label>
+		
+		<button type="submit" class="btn-primary w-full mt-2">
+			<svg class="size-4 shrink-0 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<line x1="12" y1="5" x2="12" y2="19"></line>
+				<line x1="5" y1="12" x2="19" y2="12"></line>
+			</svg>
+			Lancer l'injection
+		</button>
+		
+		<p id="add-feedback" class="min-h-4 text-xs font-bold text-center mt-2 uppercase tracking-wide" aria-live="polite"></p>
+	</form>
+</section>

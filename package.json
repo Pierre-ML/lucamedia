@@ -1,0 +1,26 @@
+{
+  "name": "telechargement-m3u8",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n astro,api -c cyan,green \"astro dev\" \"node server/index.js\"",
+    "server": "node server/index.js",
+    "build": "astro build",
+    "start": "astro build && node server/index.js",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "astro": "^7.0.7",
+    "better-sqlite3": "^12.4.1",
+    "express": "^5.1.0",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
