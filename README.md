@@ -12,7 +12,9 @@ Application **100 % locale** de gestion de file d'attente pour télécharger des
 - Case à cocher **« Vidéo uqload »** : ajoute automatiquement le Referer nécessaire pour les liens uqload
 - **Console yt-dlp intégrée** : la sortie du process s'affiche en direct dans l'interface (masquable, bouton Effacer)
 - **Qualité maximale forcée** : chaque téléchargement passe `-f "bv*+ba/b"` à yt-dlp (meilleure vidéo + meilleur audio disponibles)
+- **Téléchargement HLS confié à ffmpeg** (`--downloader m3u8:ffmpeg`) : flux continu aux timestamps corrigés — élimine les désynchronisations image/son et coupures audio aux jonctions de fragments du téléchargeur natif. Contrepartie : un téléchargement interrompu repart de zéro (pas de reprise par fragments).
 - **Certificats TLS cassés tolérés** (`--no-check-certificates`) : indispensable avec la plupart des hébergeurs de streaming, dont les certificats provoquent sinon des erreurs `CERTIFICATE_VERIFY_FAILED`
+- **Proxy anti-empoisonnement** (`server/hls-proxy.js`) : certains hébergeurs (hanerix, morencius…) déguisent leurs segments vidéo en fausses images (petit en-tête PNG/JPEG devant le flux MPEG-TS, retiré par leur lecteur web en JavaScript). Sans nettoyage, ffmpeg refuse ces segments (`Invalid data found when processing input`). Pour chaque lien `.m3u8` direct, l'app télécharge playlist et segments via un proxy local qui retire ces faux en-têtes et les sert proprement à ffmpeg. Transparent pour les flux sains.
 
 ## Prérequis
 
@@ -20,7 +22,7 @@ Application **100 % locale** de gestion de file d'attente pour télécharger des
 2. **yt-dlp** installé et **dans le PATH** :
    - via winget : `winget install yt-dlp.yt-dlp`
    - vérifiez avec `yt-dlp --version` dans un nouveau terminal
-3. (Recommandé) **ffmpeg** dans le PATH — yt-dlp s'en sert pour assembler les segments HLS : `winget install Gyan.FFmpeg`
+3. **ffmpeg** dans le PATH — utilisé pour assembler les fragments HLS et fusionner vidéo + audio en MP4 : `winget install Gyan.FFmpeg`. Sa présence est vérifiée au démarrage et affichée dans la console de l'interface.
 
 ## Installation
 
@@ -80,6 +82,18 @@ queue.db       Base SQLite (créée au premier lancement, ignorée par git)
 | `GET` | `/api/logs` | Dernières lignes de sortie yt-dlp (console) |
 | `GET` | `/api/events` | Flux SSE (`queue`, `progress`, `log`) |
 | `POST` | `/api/open-folder` | Ouvrir le dossier de sortie dans l'explorateur |
+
+## Erreur 403 : liens expirés
+
+Les liens `.m3u8` copiés depuis l'onglet Réseau (F12) des hébergeurs de streaming (morencius, hanerix, hlswish…) sont **signés et à durée de vie courte** (quelques heures, le timestamp d'expiration est visible dans l'URL). Comme la file est séquentielle, les derniers liens d'un gros lot sont souvent expirés quand leur tour arrive → `HTTP Error 403: Forbidden`.
+
+Pour éviter ça :
+
+- **Collez le lien de la page du lecteur (embed)** plutôt que le `.m3u8` brut : yt-dlp résout la page **au moment du téléchargement** et obtient un jeton frais à chaque fois. C'est la méthode fiable pour les gros lots.
+- Si vous n'avez que le `.m3u8`, ajoutez-les **par petits lots**, juste après les avoir copiés.
+- Un lien en 403 n'est réessayé que 3 fois (au lieu de 10) : inutile d'insister sur un jeton mort, la file passe vite au suivant. Le bouton « Relancer » réutilise l'ancien lien — pour un 403, ajoutez plutôt un lien frais.
+
+L'app envoie aussi automatiquement des en-têtes de navigateur (User-Agent Chrome, Referer, Origin) avec chaque téléchargement.
 
 ## Notes
 

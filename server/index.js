@@ -6,11 +6,58 @@ import { dirname, join, basename } from 'node:path';
 import { config } from './config.js';
 import { queries } from './db.js';
 import { addClient, broadcast } from './sse.js';
-import { tick, queueSnapshot, broadcastQueue, getLogs } from './worker.js';
+import { tick, queueSnapshot, broadcastQueue, getLogs, checkTools, BROWSER_UA } from './worker.js';
+import { fetchBuffer, stripFakeHeader, rewritePlaylist, makeProxyUrls } from './hls-proxy.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const app = express();
 app.use(express.json());
+
+// --- Proxy HLS : nettoie les playlists/segments empoisonnés avant ffmpeg ---
+// (segments vidéo déguisés en images ; voir hls-proxy.js)
+
+function proxyHeaders(referer) {
+  const headers = { 'User-Agent': BROWSER_UA };
+  if (referer) {
+    headers.Referer = referer;
+    try {
+      headers.Origin = new URL(referer).origin;
+    } catch {
+      /* referer non-URL : on n'ajoute pas d'Origin */
+    }
+  }
+  return headers;
+}
+
+const { playlistProxyUrl, segmentProxyUrl } = makeProxyUrls(`http://localhost:${config.port}`);
+
+app.get('/hls/list.m3u8', async (req, res) => {
+  const { url, ref } = req.query;
+  if (!/^https?:\/\//i.test(url ?? '')) return res.status(400).end('url invalide');
+  try {
+    const buf = await fetchBuffer(url, proxyHeaders(ref));
+    const rewritten = rewritePlaylist(buf.toString('utf8'), url, {
+      variantUrl: (u) => playlistProxyUrl(u, ref),
+      segmentUrl: (u) => segmentProxyUrl(u, ref),
+    });
+    res.set('Content-Type', 'application/vnd.apple.mpegurl');
+    res.end(rewritten);
+  } catch (err) {
+    res.status(502).end(`proxy playlist: ${err.message}`);
+  }
+});
+
+app.get('/hls/seg.ts', async (req, res) => {
+  const { url, ref } = req.query;
+  if (!/^https?:\/\//i.test(url ?? '')) return res.status(400).end('url invalide');
+  try {
+    const buf = await fetchBuffer(url, proxyHeaders(ref));
+    res.set('Content-Type', 'video/mp2t');
+    res.end(stripFakeHeader(buf));
+  } catch (err) {
+    res.status(502).end(`proxy segment: ${err.message}`);
+  }
+});
 
 // --- SSE ---
 app.get('/api/events', (req, res) => {
@@ -122,8 +169,25 @@ if (existsSync(dist)) {
   app.use(express.static(dist));
 }
 
-app.listen(config.port, () => {
+// Sous Windows, deux processus peuvent se lier au même port sans erreur : le second
+// s'arrête alors silencieusement (code 0). On vérifie donc explicitement avant de démarrer.
+try {
+  await fetch(`http://localhost:${config.port}/`, { signal: AbortSignal.timeout(1500) });
+  console.error(`[api] Le port ${config.port} est déjà utilisé — une autre instance de l'application tourne probablement.`);
+  console.error(`[api] Fermez-la (ou utilisez-la directement : http://localhost:${config.port}) puis relancez.`);
+  process.exit(1);
+} catch {
+  // rien ne répond : le port est libre, on peut démarrer
+}
+
+const server = app.listen(config.port, () => {
   console.log(`[api] Serveur démarré sur http://localhost:${config.port}`);
   console.log(`[api] Dossier de sortie : ${config.outputDir}`);
+  checkTools(); // affiche les versions yt-dlp / ffmpeg dans la console de l'interface
   tick(); // reprend la file au démarrage si des éléments sont en attente
+});
+
+server.on('error', (err) => {
+  console.error(`[api] Impossible de démarrer sur le port ${config.port} : ${err.message}`);
+  process.exit(1);
 });
