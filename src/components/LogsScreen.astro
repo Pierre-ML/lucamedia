@@ -1,0 +1,18 @@
+---
+import ScreenHeader from './ScreenHeader.astro';
+import Animal from './Animal.astro';
+---
+
+<section data-screen="logs" class="mx-auto w-full max-w-4xl" hidden>
+  <ScreenHeader animal="corbeau" title="Journal" description="Ce que fait Ursa : recherche, téléchargement, vérification." />
+  <div class="mb-3 flex justify-end">
+    <button id="log-clear" type="button" class="button-ghost button-sm">Effacer</button>
+  </div>
+  <div class="relative">
+    <div id="log-list" class="h-[calc(100vh-14rem)] min-h-48 overflow-y-auto rounded-xl border border-border bg-code px-4 py-3 font-mono text-[11px] leading-relaxed"></div>
+    <div id="log-empty" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+      <Animal id="ours" class="mb-3 size-14 shrink-0 text-fg/25" />
+      <p class="text-sm text-muted">Le journal est vide.</p>
+    </div>
+  </div>
+</section>

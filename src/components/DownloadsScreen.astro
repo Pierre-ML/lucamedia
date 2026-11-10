@@ -1,0 +1,43 @@
+---
+import ScreenHeader from './ScreenHeader.astro';
+import AddForm from './AddForm.astro';
+import CurrentCard from './CurrentCard.astro';
+import Animal from './Animal.astro';
+---
+
+<section data-screen="downloads" class="mx-auto flex w-full max-w-3xl flex-col gap-6" hidden>
+  <ScreenHeader animal="ours" title="Téléchargements" description="Ajoutez des liens de pages ou de flux, Ursa s'occupe du reste." />
+  <AddForm />
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button id="q-pause" type="button" class="button-ghost">Mettre la file en pause</button>
+    <button id="q-open" type="button" class="button-ghost">Ouvrir le dossier</button>
+    <span id="q-paused" class="pill bg-warning/15 text-warning" hidden>File en pause</span>
+  </div>
+
+  <div>
+    <h2 class="mb-2 text-sm font-medium">En cours</h2>
+    <CurrentCard />
+  </div>
+
+  <div>
+    <h2 class="mb-2 text-sm font-medium">En attente <span id="pending-count" class="ml-1 text-xs text-muted">0</span></h2>
+    <div id="pending-list" class="flex flex-col gap-2"></div>
+  </div>
+
+  <div>
+    <h2 class="mb-2 text-sm font-medium">Erreurs <span id="error-count" class="ml-1 text-xs text-muted">0</span></h2>
+    <div id="error-list" class="flex flex-col gap-2"></div>
+  </div>
+
+  <div>
+    <div class="mb-2 flex items-center justify-between">
+      <h2 class="text-sm font-medium">Terminés <span id="done-count" class="ml-1 text-xs text-muted">0</span></h2>
+      <button id="done-clear" type="button" class="button-ghost button-sm" disabled>Vider les terminés</button>
+    </div>
+    <div id="done-list" class="flex flex-col gap-2"></div>
+  </div>
+
+  <div id="ours-template" hidden><Animal id="ours" class="size-14" /></div>
+  <div id="owl-template" hidden><Animal id="hibou" class="size-5" /></div>
+</section>

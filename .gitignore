@@ -17,17 +17,16 @@ pnpm-debug.log*
 .env
 .env.production
 
-# base de données de la file d'attente
-queue.db
-queue.db-shm
-queue.db-wal
-
-# téléchargements (on garde le dossier, pas son contenu)
-downloads/*
-!downloads/.gitkeep
+# Tauri / Rust
+src-tauri/target/
+src-tauri/binaries/
+src-tauri/gen/
 
 # macOS-specific files
 .DS_Store
 
 # jetbrains setting folder
 .idea/
+
+# ancienne file du site (avant Ursa), gardée en local
+queue.db*

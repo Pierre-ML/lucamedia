@@ -1,71 +1,32 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import AddForm from '../components/AddForm.astro';
-import CurrentDownload from '../components/CurrentDownload.astro';
-import Console from '../components/Console.astro';
-import QueueList from '../components/QueueList.astro';
-import ErrorList from '../components/ErrorList.astro';
-import DoneList from '../components/DoneList.astro';
-import OutputFolder from '../components/OutputFolder.astro';
+import App from '../layouts/App.astro';
+import Sidebar from '../components/Sidebar.astro';
+import UpdateBanner from '../components/UpdateBanner.astro';
+import DownloadsScreen from '../components/DownloadsScreen.astro';
+import LogsScreen from '../components/LogsScreen.astro';
+import SettingsScreen from '../components/SettingsScreen.astro';
 ---
 
-<Layout>
-	<main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 relative z-10">
-		<!-- Header Brutaliste -->
-		<header class="rise brutalist-card mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 p-5">
-			<div class="flex items-center gap-4">
-				<span
-					class="grid size-12 shrink-0 place-items-center bg-cyber-yellow border-2 border-black text-black font-bold text-lg select-none shadow-[2px_2px_0px_#000]"
-					aria-hidden="true"
-				>
-					M3
-				</span>
-				<div>
-					<h1 class="text-xl font-black tracking-wider text-ink-100 uppercase">
-						TÉLÉCHARGEUR M3U8
-					</h1>
-					<p class="text-[10px] font-bold tracking-widest text-ink-500 uppercase mt-0.5">
-						// SYSTÈME LOCAL DE CAPTURE DE FLUX
-					</p>
-				</div>
-			</div>
-			
-			<div class="flex items-center gap-4">
-				<span id="connection-status" class="status-pill" data-online="0">connexion en cours</span>
-				<button id="toggle-state" type="button" class="btn-toggle" data-state="play"></button>
-			</div>
-		</header>
+<App>
+  <div class="flex h-screen w-screen">
+    <Sidebar />
 
-		<!-- Alerte NoScript -->
-		<noscript>
-			<div class="mb-8 flex items-center gap-3 border-2 border-black bg-danger text-black p-4 text-xs font-bold uppercase tracking-wider shadow-[4px_4px_0px_#000]">
-				<svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-					<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-					<line x1="12" y1="9" x2="12" y2="13"/>
-					<line x1="12" y1="17" x2="12.01" y2="17"/>
-				</svg>
-				<span>ERREUR SYSTÈME : ACTIVATION JAVASCRIPT OBLIGATOIRE.</span>
-			</div>
-		</noscript>
+    <main class="flex min-w-0 flex-1 flex-col">
+      <div id="browser-banner" class="border-b border-warning/30 bg-warning/10 px-6 py-2 text-center text-xs text-warning" hidden>
+        Mode navigateur : le moteur d'Ursa est indisponible
+      </div>
+      <UpdateBanner />
+      <div class="min-h-0 flex-1 overflow-y-auto px-6 py-8">
+        <DownloadsScreen />
+        <LogsScreen />
+        <SettingsScreen />
+      </div>
+    </main>
+  </div>
 
-		<!-- Grille Brutaliste -->
-		<div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-			<!-- Section Principale -->
-			<div class="order-2 min-w-0 space-y-8 lg:order-1">
-				<CurrentDownload />
-				<Console />
-				<QueueList />
-				<ErrorList />
-				<DoneList />
-			</div>
-			
-			<!-- Section Latérale -->
-			<aside class="order-1 min-w-0 space-y-6 lg:order-2 lg:sticky lg:top-8">
-				<AddForm />
-				<OutputFolder />
-			</aside>
-		</div>
-	</main>
+  <div id="toasts" class="pointer-events-none fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2"></div>
 
-	<script src="../scripts/app.js"></script>
-</Layout>
+  <script>
+    import '../scripts/main';
+  </script>
+</App>

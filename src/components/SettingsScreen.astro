@@ -1,0 +1,99 @@
+---
+import ScreenHeader from './ScreenHeader.astro';
+
+const toggles = [
+  ['set-show-browser', 'Afficher le navigateur pendant la détection', 'Utile pour résoudre une vérification anti-robot à la main.'],
+  ['set-verify', 'Vérifier après téléchargement', 'Contrôle la durée et recherche les coupures dans la vidéo finale.'],
+  ['set-repair', 'Réparer automatiquement', 'Retélécharge les segments fautifs puis réassemble la vidéo.'],
+];
+---
+
+<section data-screen="settings" class="mx-auto w-full max-w-2xl" hidden>
+  <ScreenHeader animal="cerf" title="Réglages" description="Dossier de destination, téléchargement et vérification." />
+  <div class="panel flex flex-col gap-5">
+    <div>
+      <label class="field-label" for="set-dest">Dossier de destination</label>
+      <div class="flex gap-2">
+        <input id="set-dest" class="field" type="text" />
+        <button id="set-choose" type="button" class="button-ghost shrink-0">Choisir…</button>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <label class="field-label !mb-0" for="set-parallel">Segments en parallèle</label>
+        <span class="text-xs text-muted">De 1 à 32</span>
+      </div>
+      <input id="set-parallel" class="field !w-24 text-center" type="number" min="1" max="32" value="8" />
+    </div>
+
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <label class="field-label !mb-0" for="set-retries">Tentatives maximum</label>
+        <span class="text-xs text-muted">De 1 à 10 avant de classer en erreur</span>
+      </div>
+      <input id="set-retries" class="field !w-24 text-center" type="number" min="1" max="10" value="5" />
+    </div>
+
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <label class="field-label !mb-0" for="set-browser">Navigateur de détection</label>
+        <span class="text-xs text-muted">Utilisé pour trouver la vidéo sur une page.</span>
+      </div>
+      <select id="set-browser" class="field !w-40">
+        <option value="auto">Automatique</option>
+        <option value="chrome">Chrome</option>
+        <option value="edge">Edge</option>
+      </select>
+    </div>
+
+    {toggles.map(([id, label, help]) => (
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <label class="field-label !mb-0" for={id}>{label}</label>
+          <span class="text-xs text-muted">{help}</span>
+        </div>
+        <input id={id} type="checkbox" class="toggle-switch" />
+      </div>
+    ))}
+
+    <div class="flex justify-end border-t border-border pt-4">
+      <button id="set-save" type="button" class="button-primary">Enregistrer</button>
+    </div>
+  </div>
+
+  <div class="panel mt-5">
+    <div class="flex items-center justify-between gap-4">
+      <span class="field-label !mb-0">Outils</span>
+      <button id="tools-refresh" type="button" class="button-ghost button-sm">Actualiser</button>
+    </div>
+    <div id="tools-list" class="mt-2 flex flex-col divide-y divide-border"></div>
+  </div>
+
+  <div class="panel mt-5 flex flex-col gap-4">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <span class="field-label !mb-0">Mises à jour</span>
+        <span class="text-xs text-muted">Version actuelle : <span id="upd-current" class="font-medium text-fg">—</span></span>
+      </div>
+      <div class="flex gap-2">
+        <button id="upd-notes" type="button" class="button-ghost shrink-0" hidden>Notes de version</button>
+        <button id="upd-install" type="button" class="button-primary shrink-0" hidden>Installer</button>
+        <button id="upd-check" type="button" class="button-ghost shrink-0">Vérifier les mises à jour</button>
+      </div>
+    </div>
+    <p id="upd-status" class="text-sm text-muted" role="status"></p>
+    <div id="upd-progress" hidden>
+      <progress id="upd-progress-bar" class="h-1 w-full overflow-hidden rounded-full [&::-moz-progress-bar]:bg-fg [&::-webkit-progress-bar]:bg-fg/10 [&::-webkit-progress-value]:bg-fg" max="1"></progress>
+      <p id="upd-progress-text" class="mt-1.5 text-xs text-muted"></p>
+    </div>
+  </div>
+
+  <div class="panel mt-5 flex items-center justify-between gap-4">
+    <div>
+      <span class="field-label !mb-0">Désinstaller l'application</span>
+      <span class="text-xs text-muted">Supprime Ursa de cet ordinateur. Les vidéos téléchargées sont conservées.</span>
+    </div>
+    <button id="app-uninstall" type="button" class="button-danger shrink-0">Désinstaller</button>
+  </div>
+</section>

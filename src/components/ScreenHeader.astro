@@ -1,0 +1,19 @@
+---
+// Motif titre + animal des écrans (un animal par section).
+import Animal from './Animal.astro';
+
+interface Props {
+  animal: string;
+  title: string;
+  description: string;
+}
+const { animal, title, description } = Astro.props;
+---
+
+<div class="mb-6">
+  <div class="flex items-center gap-2.5">
+    <Animal id={animal} class="size-7 shrink-0 text-fg" />
+    <h1 class="text-lg font-medium tracking-tight">{title}</h1>
+  </div>
+  <p class="mt-1 text-sm text-muted">{description}</p>
+</div>

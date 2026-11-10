@@ -1,0 +1,47 @@
+---
+// Carte « En cours » : peuplée par src/scripts/downloads.ts (textContent uniquement).
+import Animal from './Animal.astro';
+
+const stats = [
+  ['Segments', 'cur-seg'],
+  ['Taille', 'cur-size'],
+  ['Débit', 'cur-speed'],
+  ['Temps restant', 'cur-eta'],
+  ['Qualité', 'cur-quality'],
+  ['Origine', 'cur-via'],
+];
+---
+
+<div>
+  <div id="cur-empty" class="flex flex-col items-center py-6 text-center">
+    <Animal id="ours" class="mb-3 size-14 shrink-0 text-fg/25" />
+    <p class="text-sm text-muted">Aucun téléchargement en cours.</p>
+  </div>
+  <div id="cur-card" class="panel flex flex-col gap-3" hidden>
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0 flex-1">
+        <div id="cur-name" class="truncate font-medium"></div>
+        <div id="cur-url" class="truncate font-mono text-[11px] text-muted"></div>
+        <div class="mt-1.5 flex items-center gap-2">
+          <span id="cur-phase" class="pill bg-fg/10 text-fg"></span>
+          <span id="cur-try" class="pill bg-warning/15 text-warning" hidden></span>
+        </div>
+      </div>
+      <button id="cur-cancel" type="button" class="button-danger button-sm shrink-0">Annuler</button>
+    </div>
+    <div>
+      <div class="h-1.5 overflow-hidden rounded-full bg-fg/10">
+        <div id="cur-bar" class="h-full rounded-full bg-fg transition-[width] duration-200" style="width:0%"></div>
+      </div>
+      <div id="cur-percent" class="mt-1 text-xs tabular-nums text-muted">0 %</div>
+    </div>
+    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3">
+      {stats.map(([label, id]) => (
+        <div class="flex min-w-0 flex-col">
+          <span class="text-[10px] uppercase tracking-wide text-muted">{label}</span>
+          <span id={id} class="truncate font-medium tabular-nums">—</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

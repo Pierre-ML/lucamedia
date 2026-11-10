@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Ursa",
+  "mainBinaryName": "ursa",
+  "version": "1.0.0",
+  "identifier": "com.ursa.app",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:4321",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Ursa",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 960,
+        "minHeight": 640,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self' ipc: http://ipc.localhost",
+        "connect-src": "'self' ipc: http://ipc.localhost ws://localhost:4321",
+        "img-src": "'self' data: blob:",
+        "media-src": "'self' data: blob:",
+        "style-src": "'self' 'unsafe-inline'",
+        "font-src": "'self' data:",
+        "script-src": "'self'"
+      },
+      "dangerousDisableAssetCspModification": ["style-src"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "publisher": "Pierre Mouilleseaux Lhuillier",
+    "copyright": "© 2026 Pierre Mouilleseaux Lhuillier",
+    "shortDescription": "Téléchargeur de vidéos HLS/m3u8 avec vérification d'intégrité",
+    "longDescription": "Application de bureau pour télécharger des vidéos HLS/m3u8 (et fichiers directs ou pages gérées par yt-dlp), avec vérification de l'intégrité du résultat : segments corrompus, trous et dérive audio/vidéo sont détectés et réparés.",
+    "homepage": "https://github.com/Pierre-ML/telechargment_m3u8",
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "externalBin": ["binaries/ffmpeg", "binaries/ffprobe", "binaries/yt-dlp"],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "installerHooks": "./windows/hooks.nsh",
+        "template": "./windows/installer.nsi",
+        "languages": ["French", "English"]
+      }
+    }
+  }
+}

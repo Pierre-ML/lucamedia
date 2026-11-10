@@ -1,0 +1,31 @@
+---
+import Animal from './Animal.astro';
+
+const items = [
+  { id: 'downloads', label: 'Téléchargements', d: 'M12 3v12M7 11l5 5 5-5M4 20h16' },
+  { id: 'logs', label: 'Journal', d: 'M4 6h16M4 12h16M4 18h10' },
+  { id: 'settings', label: 'Réglages', d: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z' },
+];
+---
+
+<aside id="sidebar" class="relative flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
+  <div class="resize-handle resize-handle-x right-0 translate-x-1/2" data-resize="sidebar" role="separator" aria-orientation="vertical" aria-label="Redimensionner la barre latérale" tabindex="0" aria-valuenow="256" aria-valuemin="180" aria-valuemax="420"></div>
+  <div class="flex h-9 items-center gap-2 px-5 pt-6 pb-4 text-fg">
+    <Animal id="ours" class="size-7 shrink-0" />
+    <span class="whitespace-nowrap font-serif text-base font-semibold tracking-tight">Ursa</span>
+  </div>
+
+  <nav class="flex flex-1 flex-col gap-0.5 px-3 pt-4" aria-label="Navigation">
+    {items.map((i) => (
+      <button type="button" class="nav-item" data-nav={i.id} aria-current="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="shrink-0" stroke-linecap="round" stroke-linejoin="round"><path d={i.d}></path></svg>
+        <span>{i.label}</span>
+      </button>
+    ))}
+  </nav>
+
+  <div class="flex items-center gap-2 border-t border-border px-5 py-3 text-xs text-muted">
+    <span id="tools-dot" class="size-2 rounded-full bg-border"></span>
+    <span id="tools-text" class="truncate">Outils…</span>
+  </div>
+</aside>

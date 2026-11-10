@@ -1,0 +1,140 @@
+name: CI
+
+# Un seul workflow par push.
+# - Push / PR sans nouvelle version : vérification (build front + cargo check/test).
+# - Push sur main avec une version non taguée (src-tauri/tauri.conf.json) : tests,
+#   installateurs Windows et release GitHub vX.Y.Z (pas de vérification séparée).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release: ${{ steps.tag.outputs.release }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lire et vérifier la version
+        id: version
+        shell: bash
+        run: |
+          v=$(node -e '
+            const fs = require("fs");
+            const main = JSON.parse(fs.readFileSync("src-tauri/tauri.conf.json", "utf8")).version;
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8")).version;
+            const lock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));
+            const cargo = (fs.readFileSync("src-tauri/Cargo.toml", "utf8").match(/^\[package\][\s\S]*?^version\s*=\s*"([^"]+)"/m) || [])[1];
+            const found = {
+              "package.json": pkg,
+              "package-lock.json (racine)": lock.version,
+              "package-lock.json (packages)": lock.packages && lock.packages[""] && lock.packages[""].version,
+              "src-tauri/Cargo.toml": cargo,
+            };
+            const bad = Object.entries(found).filter(([, x]) => x !== main);
+            if (!main || bad.length) {
+              for (const [f, x] of bad) console.error("::error::Version divergente dans " + f + " : " + x + " (tauri.conf.json : " + main + ")");
+              if (!main) console.error("::error::Version introuvable dans src-tauri/tauri.conf.json");
+              process.exit(1);
+            }
+            console.log(main);
+          ')
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Vérifier si le tag existe déjà
+        id: tag
+        shell: bash
+        run: |
+          release=false
+          if [ -n "$(git ls-remote --tags origin "refs/tags/v${{ steps.version.outputs.version }}")" ]; then
+            echo "Version v${{ steps.version.outputs.version }} déjà publiée : incrémente-la avec \`npm run bump -- patch\`." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              release=true
+            fi
+          fi
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: version
+    if: needs.version.outputs.release != 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/fetch-ffmpeg.mjs --target x86_64-pc-windows-msvc
+      - run: cargo check --manifest-path src-tauri/Cargo.toml
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+
+  release:
+    needs: version
+    if: needs.version.outputs.release == 'true'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      - name: Télécharger ffmpeg, ffprobe et yt-dlp (sidecars)
+        run: node scripts/fetch-ffmpeg.mjs --target x86_64-pc-windows-msvc
+
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+
+      - run: npm run desktop:build
+
+      - name: Vérifier les deux installateurs
+        shell: bash
+        run: |
+          d="src-tauri/target/release/bundle/release"
+          missing=0
+          for f in "Ursa-Setup.exe" "Ursa-Update.exe"; do
+            if [ ! -f "$d/$f" ]; then
+              echo "::error::Fichier manquant : $d/$f"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.version.outputs.version }}
+          name: Ursa v${{ needs.version.outputs.version }}
+          generate_release_notes: true
+          files: |
+            src-tauri/target/release/bundle/release/Ursa-Setup.exe
+            src-tauri/target/release/bundle/release/Ursa-Update.exe
