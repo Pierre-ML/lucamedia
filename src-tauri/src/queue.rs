@@ -11,6 +11,7 @@ use std::time::{Duration, Instant};
 use anyhow::{anyhow, Context};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use tauri::{AppHandle, Emitter, Manager, State};
 use tokio::sync::Notify;
 use tokio_util::sync::CancellationToken;
@@ -342,15 +343,22 @@ impl Inner {
         );
     }
 
+    /// Prévient l'interface que le navigateur visible attend (ou n'attend plus) l'utilisateur.
+    fn emit_assist(&self, id: i64, active: bool) {
+        let _ = self.app.emit("detect-assist", json!({ "id": id, "active": active }));
+    }
+
     fn job_ctx(self: &Arc<Self>, id: i64, cancel: CancellationToken) -> JobCtx {
         let for_log = self.clone();
         let for_progress = self.clone();
+        let for_assist = self.clone();
         let throttle = Arc::new(Mutex::new(Throttle::default()));
         JobCtx::new(
             cancel,
             move |level, msg| for_log.log(level, Some(id), msg),
             move |p| for_progress.on_progress(id, &throttle, p),
         )
+        .with_assist(move |active| for_assist.emit_assist(id, active))
     }
 }
 
@@ -475,7 +483,12 @@ async fn run_one(q: &Arc<Inner>, dl: Download) {
                 }
                 let message = format!("{e:#}");
                 attempt += 1;
-                let limit = max_attempts(&message, settings.max_retries);
+                // Fenêtre assistée fermée ou délai écoulé : la rouvrir à chaque tentative n'aurait pas de sens.
+                let limit = if detect::is_assist_failure(&message) {
+                    attempt
+                } else {
+                    max_attempts(&message, settings.max_retries)
+                };
                 if attempt >= limit {
                     ctx.error(format!("Échec définitif après {attempt} tentative(s) : {message}"));
                     let full = if is_403(&message) {

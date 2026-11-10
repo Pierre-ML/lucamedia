@@ -1,10 +1,9 @@
 // Mises à jour : vérification silencieuse au démarrage (bandeau), section « Mises à jour » des Réglages
 // et installation via l'updater (progression, boutons désactivés, redémarrage automatique).
 import { appCheckUpdate, appInstallUpdate, onUpdateProgress, errMsg, type UpdateInfo } from './api';
+import { $ } from './dom';
 import { toast } from './toast';
 import { state } from './state';
-
-const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
 let known: UpdateInfo | null = null;
 let checking = false;
@@ -15,7 +14,7 @@ const mb = (n: number) => (n / (1024 * 1024)).toFixed(1).replace('.', ',');
 function setStatus(text: string, tone: 'muted' | 'ok' | 'accent' | 'err' = 'muted'): void {
   const el = $('upd-status');
   el.textContent = text;
-  el.className = `text-sm ${tone === 'ok' ? 'text-success' : tone === 'accent' ? 'text-fg' : tone === 'err' ? 'text-danger' : 'text-muted'}`;
+  el.className = `text-sm empty:hidden ${tone === 'ok' ? 'text-success' : tone === 'accent' ? 'text-fg' : tone === 'err' ? 'text-danger' : 'text-muted'}`;
 }
 
 function render(): void {

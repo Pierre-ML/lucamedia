@@ -309,7 +309,6 @@ mod tests {
             audio: audio.then(|| track(TrackKind::Audio, false)),
             width: None,
             height: None,
-            bandwidth: None,
         }
     }
 

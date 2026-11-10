@@ -124,6 +124,7 @@ pub struct Progress {
 
 type LogFn = Arc<dyn Fn(LogLevel, String) + Send + Sync>;
 type ProgressFn = Arc<dyn Fn(Progress) + Send + Sync>;
+type AssistFn = Arc<dyn Fn(bool) + Send + Sync>;
 
 /// Contexte passé à chaque étape d'un téléchargement. Clonable, `Send + Sync`.
 #[derive(Clone)]
@@ -131,6 +132,7 @@ pub struct JobCtx {
     pub cancel: CancellationToken,
     log: LogFn,
     progress: ProgressFn,
+    assist: AssistFn,
 }
 
 impl JobCtx {
@@ -143,10 +145,18 @@ impl JobCtx {
             cancel,
             log: Arc::new(log),
             progress: Arc::new(progress),
+            assist: Arc::new(|_| {}),
         }
     }
 
+    /// Branche le rappel du mode assisté (navigateur visible en attente de l'utilisateur).
+    pub fn with_assist(mut self, assist: impl Fn(bool) + Send + Sync + 'static) -> Self {
+        self.assist = Arc::new(assist);
+        self
+    }
+
     /// Contexte muet, pour les tests.
+    #[cfg(test)]
     pub fn noop() -> Self {
         Self::new(CancellationToken::new(), |_, _| {}, |_| {})
     }
@@ -167,6 +177,12 @@ impl JobCtx {
         (self.progress)(p);
     }
 
+    /// Signale l'ouverture (`true`) ou la fin (`false`) de la fenêtre où l'utilisateur doit
+    /// lancer lui-même la lecture. Sans effet pour `JobCtx::noop()`.
+    pub fn assist(&self, active: bool) {
+        (self.assist)(active);
+    }
+
     pub fn is_cancelled(&self) -> bool {
         self.cancel.is_cancelled()
     }
@@ -184,6 +200,7 @@ impl JobCtx {
 mod tests {
     use super::*;
     use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Mutex;
 
     #[test]
     fn for_url_derives_referer_and_origin() {
@@ -250,5 +267,18 @@ mod tests {
         ctx.warn("b");
         ctx.error("c");
         assert_eq!(n.load(Ordering::SeqCst), 3);
+    }
+
+    #[test]
+    fn assist_callback() {
+        // Contexte muet : ignoré sans erreur.
+        JobCtx::noop().assist(true);
+
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let s2 = seen.clone();
+        let ctx = JobCtx::noop().with_assist(move |a| s2.lock().unwrap().push(a));
+        ctx.assist(true);
+        ctx.clone().assist(false);
+        assert_eq!(*seen.lock().unwrap(), vec![true, false]);
     }
 }

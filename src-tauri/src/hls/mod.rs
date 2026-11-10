@@ -77,7 +77,6 @@ pub struct HlsDownload {
     pub audio: Option<TrackInfo>, // piste audio séparée (#EXT-X-MEDIA) si la variante en référence une
     pub width: Option<u32>,
     pub height: Option<u32>,
-    pub bandwidth: Option<u64>,
 }
 
 /// Mini serveur HTTP local pour les tests d'intégration (routes fixes, Range, compteurs).

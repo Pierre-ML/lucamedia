@@ -28,5 +28,3 @@ src-tauri/gen/
 # jetbrains setting folder
 .idea/
 
-# ancienne file du site (avant Ursa), gardée en local
-queue.db*

@@ -2,10 +2,10 @@
 import Animal from './Animal.astro';
 ---
 
-<div id="upd-banner" class="flex items-center justify-center gap-3 border-b border-border bg-surface px-6 py-2 text-xs" hidden>
-  <Animal id="ours" class="size-5 shrink-0 text-fg" />
+<div id="upd-banner" class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-b border-border bg-surface px-6 py-2.5 text-sm" hidden>
+  <Animal id="ours" class="size-6 shrink-0 text-fg" />
   <span id="upd-banner-text" class="font-medium text-fg"></span>
   <button id="upd-banner-install" type="button" class="button-primary button-sm">Installer</button>
   <button id="upd-banner-later" type="button" class="button-ghost button-sm">Plus tard</button>
-  <button id="upd-banner-notes" type="button" class="text-fg underline decoration-fg/30 underline-offset-2 transition-colors hover:decoration-fg" hidden>Notes de version</button>
+  <button id="upd-banner-notes" type="button" class="button-text underline" hidden>Notes de version</button>
 </div>

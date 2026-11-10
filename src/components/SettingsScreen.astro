@@ -1,98 +1,87 @@
 ---
 import ScreenHeader from './ScreenHeader.astro';
+import SettingRow from './SettingRow.astro';
 
 const toggles = [
-  ['set-show-browser', 'Afficher le navigateur pendant la détection', 'Utile pour résoudre une vérification anti-robot à la main.'],
-  ['set-verify', 'Vérifier après téléchargement', 'Contrôle la durée et recherche les coupures dans la vidéo finale.'],
-  ['set-repair', 'Réparer automatiquement', 'Retélécharge les segments fautifs puis réassemble la vidéo.'],
+  ['set-show-browser', 'Toujours afficher le navigateur pendant la recherche de la vidéo', 'Pratique si un site demande de prouver que vous n’êtes pas un robot.'],
+  ['set-verify', 'Vérifier la vidéo après le téléchargement', 'Contrôle la durée et recherche les coupures dans le fichier final.'],
+  ['set-repair', 'Réparer automatiquement', 'Retélécharge les parties abîmées puis reconstruit la vidéo. Demande la vérification.'],
 ];
 ---
 
-<section data-screen="settings" class="mx-auto w-full max-w-2xl" hidden>
-  <ScreenHeader animal="cerf" title="Réglages" description="Dossier de destination, téléchargement et vérification." />
-  <div class="panel flex flex-col gap-5">
+<section data-screen="settings" class="mx-auto flex w-full max-w-2xl flex-col gap-6" hidden>
+  <ScreenHeader animal="cerf" title="Réglages" />
+
+  <div class="panel flex flex-col gap-5 !p-6">
     <div>
-      <label class="field-label" for="set-dest">Dossier de destination</label>
+      <label class="field-label mb-1.5" for="set-dest">Dossier de destination</label>
       <div class="flex gap-2">
         <input id="set-dest" class="field" type="text" />
         <button id="set-choose" type="button" class="button-ghost shrink-0">Choisir…</button>
       </div>
+      <p class="field-help mt-1.5">Les vidéos terminées sont enregistrées ici.</p>
     </div>
 
-    <div class="flex items-center justify-between gap-4">
-      <div>
-        <label class="field-label !mb-0" for="set-parallel">Segments en parallèle</label>
-        <span class="text-xs text-muted">De 1 à 32</span>
+    <details class="border-t border-border pt-4">
+      <summary class="disclosure">Avancé</summary>
+      <div class="mt-2 flex flex-col divide-y divide-border">
+        <SettingRow for="set-parallel" label="Segments en parallèle" help="De 1 à 32. Plus il y en a, plus c’est rapide, mais certains sites refusent.">
+          <input id="set-parallel" class="field !w-24 shrink-0 text-center" type="number" min="1" max="32" value="8" />
+        </SettingRow>
+        <SettingRow for="set-retries" label="Tentatives maximum" help="De 1 à 10 essais avant de déclarer un échec.">
+          <input id="set-retries" class="field !w-24 shrink-0 text-center" type="number" min="1" max="10" value="5" />
+        </SettingRow>
+        <SettingRow for="set-browser" label="Navigateur" help="Utilisé pour trouver la vidéo d’une page. Automatique convient presque toujours.">
+          <select id="set-browser" class="field !w-40 shrink-0">
+            <option value="auto">Automatique</option>
+            <option value="chrome">Chrome</option>
+            <option value="edge">Edge</option>
+          </select>
+        </SettingRow>
+        {toggles.map(([id, label, help]) => (
+          <SettingRow for={id} label={label} help={help}>
+            <input id={id} type="checkbox" class="toggle-switch" />
+          </SettingRow>
+        ))}
       </div>
-      <input id="set-parallel" class="field !w-24 text-center" type="number" min="1" max="32" value="8" />
-    </div>
+    </details>
 
-    <div class="flex items-center justify-between gap-4">
-      <div>
-        <label class="field-label !mb-0" for="set-retries">Tentatives maximum</label>
-        <span class="text-xs text-muted">De 1 à 10 avant de classer en erreur</span>
-      </div>
-      <input id="set-retries" class="field !w-24 text-center" type="number" min="1" max="10" value="5" />
-    </div>
-
-    <div class="flex items-center justify-between gap-4">
-      <div>
-        <label class="field-label !mb-0" for="set-browser">Navigateur de détection</label>
-        <span class="text-xs text-muted">Utilisé pour trouver la vidéo sur une page.</span>
-      </div>
-      <select id="set-browser" class="field !w-40">
-        <option value="auto">Automatique</option>
-        <option value="chrome">Chrome</option>
-        <option value="edge">Edge</option>
-      </select>
-    </div>
-
-    {toggles.map(([id, label, help]) => (
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <label class="field-label !mb-0" for={id}>{label}</label>
-          <span class="text-xs text-muted">{help}</span>
-        </div>
-        <input id={id} type="checkbox" class="toggle-switch" />
-      </div>
-    ))}
-
-    <div class="flex justify-end border-t border-border pt-4">
+    <div class="flex justify-end">
       <button id="set-save" type="button" class="button-primary">Enregistrer</button>
     </div>
   </div>
 
-  <div class="panel mt-5">
+  <div class="panel !p-6">
     <div class="flex items-center justify-between gap-4">
-      <span class="field-label !mb-0">Outils</span>
+      <h2 class="text-lg font-semibold">Outils</h2>
       <button id="tools-refresh" type="button" class="button-ghost button-sm">Actualiser</button>
     </div>
     <div id="tools-list" class="mt-2 flex flex-col divide-y divide-border"></div>
   </div>
 
-  <div class="panel mt-5 flex flex-col gap-4">
-    <div class="flex items-center justify-between gap-4">
+  <div class="panel flex flex-col gap-4 !p-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
       <div>
-        <span class="field-label !mb-0">Mises à jour</span>
-        <span class="text-xs text-muted">Version actuelle : <span id="upd-current" class="font-medium text-fg">—</span></span>
+        <h2 class="text-lg font-semibold">Mises à jour</h2>
+        <p class="field-help">Version actuelle : <span id="upd-current" class="font-medium text-fg">—</span></p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <button id="upd-notes" type="button" class="button-ghost shrink-0" hidden>Notes de version</button>
         <button id="upd-install" type="button" class="button-primary shrink-0" hidden>Installer</button>
         <button id="upd-check" type="button" class="button-ghost shrink-0">Vérifier les mises à jour</button>
       </div>
     </div>
-    <p id="upd-status" class="text-sm text-muted" role="status"></p>
+    <p id="upd-status" class="text-sm text-muted empty:hidden" role="status"></p>
     <div id="upd-progress" hidden>
-      <progress id="upd-progress-bar" class="h-1 w-full overflow-hidden rounded-full [&::-moz-progress-bar]:bg-fg [&::-webkit-progress-bar]:bg-fg/10 [&::-webkit-progress-value]:bg-fg" max="1"></progress>
-      <p id="upd-progress-text" class="mt-1.5 text-xs text-muted"></p>
+      <progress id="upd-progress-bar" class="h-2 w-full overflow-hidden rounded-full [&::-moz-progress-bar]:bg-fg [&::-webkit-progress-bar]:bg-white/15 [&::-webkit-progress-value]:bg-fg" max="1"></progress>
+      <p id="upd-progress-text" class="mt-1.5 text-sm text-muted"></p>
     </div>
   </div>
 
-  <div class="panel mt-5 flex items-center justify-between gap-4">
+  <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-accent/60 p-5">
     <div>
-      <span class="field-label !mb-0">Désinstaller l'application</span>
-      <span class="text-xs text-muted">Supprime Ursa de cet ordinateur. Les vidéos téléchargées sont conservées.</span>
+      <h2 class="text-base font-semibold">Désinstaller l’application</h2>
+      <p class="field-help">Supprime Ursa de cet ordinateur. Les vidéos téléchargées sont conservées.</p>
     </div>
     <button id="app-uninstall" type="button" class="button-danger shrink-0">Désinstaller</button>
   </div>

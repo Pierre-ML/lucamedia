@@ -1,43 +1,26 @@
 ---
-import ScreenHeader from './ScreenHeader.astro';
 import AddForm from './AddForm.astro';
-import CurrentCard from './CurrentCard.astro';
 import Animal from './Animal.astro';
 ---
 
-<section data-screen="downloads" class="mx-auto flex w-full max-w-3xl flex-col gap-6" hidden>
-  <ScreenHeader animal="ours" title="Téléchargements" description="Ajoutez des liens de pages ou de flux, Ursa s'occupe du reste." />
+<section data-screen="downloads" class="mx-auto flex w-full max-w-3xl flex-col gap-8" hidden>
   <AddForm />
 
-  <div class="flex flex-wrap items-center gap-2">
-    <button id="q-pause" type="button" class="button-ghost">Mettre la file en pause</button>
-    <button id="q-open" type="button" class="button-ghost">Ouvrir le dossier</button>
-    <span id="q-paused" class="pill bg-warning/15 text-warning" hidden>File en pause</span>
-  </div>
-
   <div>
-    <h2 class="mb-2 text-sm font-medium">En cours</h2>
-    <CurrentCard />
-  </div>
-
-  <div>
-    <h2 class="mb-2 text-sm font-medium">En attente <span id="pending-count" class="ml-1 text-xs text-muted">0</span></h2>
-    <div id="pending-list" class="flex flex-col gap-2"></div>
-  </div>
-
-  <div>
-    <h2 class="mb-2 text-sm font-medium">Erreurs <span id="error-count" class="ml-1 text-xs text-muted">0</span></h2>
-    <div id="error-list" class="flex flex-col gap-2"></div>
-  </div>
-
-  <div>
-    <div class="mb-2 flex items-center justify-between">
-      <h2 class="text-sm font-medium">Terminés <span id="done-count" class="ml-1 text-xs text-muted">0</span></h2>
-      <button id="done-clear" type="button" class="button-ghost button-sm" disabled>Vider les terminés</button>
+    <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <h2 class="mr-auto text-lg font-semibold">Téléchargements</h2>
+      <span id="q-paused" class="pill bg-warning/15 text-warning" hidden>File en pause</span>
+      <button id="q-pause" type="button" class="button-ghost button-sm" hidden>Mettre en pause</button>
+      <button id="done-clear" type="button" class="button-ghost button-sm" hidden>Vider les terminés</button>
+      <button id="q-open" type="button" class="button-ghost button-sm">Ouvrir le dossier</button>
     </div>
-    <div id="done-list" class="flex flex-col gap-2"></div>
+
+    <div id="dl-empty" class="flex flex-col items-center rounded-xl border border-dashed border-control-dim py-10 text-center">
+      <Animal id="ours" class="mb-3 size-16 shrink-0 text-faint" />
+      <p class="text-base text-muted">Vos téléchargements apparaîtront ici.</p>
+    </div>
+    <div id="dl-list" class="flex flex-col gap-3"></div>
   </div>
 
-  <div id="ours-template" hidden><Animal id="ours" class="size-14" /></div>
   <div id="owl-template" hidden><Animal id="hibou" class="size-5" /></div>
 </section>

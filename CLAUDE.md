@@ -31,7 +31,6 @@ Application desktop **Windows uniquement** (Tauri 2, productName `Ursa`, binaire
 - Sidecars : `ffmpeg`, `ffprobe`, `yt-dlp` (`bundle.externalBin`), récupérés par `scripts/fetch-ffmpeg.mjs`
 - `scripts/build-updater.mjs`, `name-installers.mjs` : produisent `Ursa-Setup.exe` et `Ursa-Update.exe`
 - `src-tauri/windows/` : template NSIS (setup + mode updater) et hooks
-- `server/` : ancien serveur Express/yt-dlp (prototype web), remplacé par le cœur Rust
 
 ## Architecture
 

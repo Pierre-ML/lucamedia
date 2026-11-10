@@ -5,7 +5,6 @@ import { toast } from './toast';
 import { state } from './state';
 
 function fill(s: Settings): void {
-  state.settings = s;
   $<HTMLInputElement>('set-dest').value = s.destDir;
   $<HTMLInputElement>('set-parallel').value = String(s.parallelSegments);
   $<HTMLInputElement>('set-retries').value = String(s.maxRetries);
@@ -72,10 +71,10 @@ async function uninstall(): Promise<void> {
 // ---------- Outils ----------
 
 function toolRow(label: string, ok: boolean, detail: string, path: string | null): HTMLElement {
-  const row = el('div', 'flex items-center justify-between gap-3 py-2');
+  const row = el('div', 'flex items-center justify-between gap-3 py-3');
   const left = el('div', 'min-w-0');
-  left.append(el('div', 'text-sm font-medium', label));
-  const d = el('div', 'truncate font-mono text-[11px] text-muted', detail);
+  left.append(el('div', 'text-sm font-medium text-fg', label));
+  const d = el('div', 'truncate font-mono text-xs text-muted', detail);
   if (path) d.title = path;
   left.append(d);
   const pill = el('span', `pill shrink-0 ${ok ? 'bg-success/15 text-success' : 'bg-danger/15 text-danger'}`, ok ? 'Disponible' : 'Introuvable');
@@ -92,20 +91,20 @@ function paintTools(t: ToolsStatus): void {
     toolRow('Navigateur', t.browser.available, t.browser.name ?? t.browser.path ?? '—', t.browser.path),
   );
   const all = t.ffmpeg.available && t.ffprobe.available && t.ytdlp.available;
-  $('tools-dot').className = `size-2 rounded-full ${all ? 'bg-success' : 'bg-danger'}`;
+  $('tools-dot').className = `size-2.5 shrink-0 rounded-full ${all ? 'bg-success' : 'bg-danger'}`;
   $('tools-text').textContent = all ? 'Outils prêts' : 'Outil manquant';
 }
 
-export async function loadTools(): Promise<void> {
+async function loadTools(): Promise<void> {
   if (!state.tauri) {
-    $('tools-list').replaceChildren(el('p', 'py-2 text-sm text-muted', 'Indisponible hors de l’application.'));
+    $('tools-list').replaceChildren(el('p', 'py-3 text-sm text-muted', 'Indisponible hors de l’application.'));
     $('tools-text').textContent = 'Outils indisponibles';
     return;
   }
   try {
     paintTools(await toolsStatus());
   } catch (e) {
-    $('tools-dot').className = 'size-2 rounded-full bg-danger';
+    $('tools-dot').className = 'size-2.5 shrink-0 rounded-full bg-danger';
     $('tools-text').textContent = 'Outils : erreur';
     toast(errMsg(e), 'err');
   }

@@ -32,12 +32,8 @@ url = "2"
 rusqlite = { version = "0.32", features = ["bundled"] }
 aes = "0.8"
 cbc = { version = "0.1", features = ["std"] }
-hex = "0.4"
 dirs = "6"
 urlencoding = "2"
-uuid = { version = "1", features = ["v4"] }
-bytes = "1"
-tempfile = "3"
 # deps ajoutées par les modules
 tokio-tungstenite = "0.30"
 

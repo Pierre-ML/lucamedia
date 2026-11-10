@@ -54,13 +54,11 @@ const EXIT_FALLBACK: Duration = Duration::from_secs(10);
 static INSTALLING: AtomicBool = AtomicBool::new(false);
 
 /// Prend la garde ; `None` si une installation est déjà en cours. Relâchée au `Drop`, sauf après `keep()`.
-#[cfg_attr(not(windows), allow(dead_code))]
 struct InstallGuard<'a> {
     flag: &'a AtomicBool,
     release: bool,
 }
 
-#[cfg_attr(not(windows), allow(dead_code))]
 impl<'a> InstallGuard<'a> {
     fn acquire(flag: &'a AtomicBool) -> Option<Self> {
         flag.compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)

@@ -68,6 +68,8 @@ export type ProgressEvent = {
   segmentsDone: number | null;
   segmentsTotal: number | null;
 };
+/** Aide à la détection : une fenêtre de navigateur vient de s'ouvrir (active) ou de se fermer. */
+export type DetectAssist = { id: number; active: boolean };
 export type LogLine = { ts: number; level: 'info' | 'warn' | 'error'; downloadId: number | null; message: string };
 
 export const inTauri = (): boolean =>
@@ -99,6 +101,8 @@ export const onQueueUpdate = (cb: (q: QueueState) => void): Promise<UnlistenFn> 
   listen<QueueState>('queue-update', (e) => cb(e.payload));
 export const onDownloadProgress = (cb: (p: ProgressEvent) => void): Promise<UnlistenFn> =>
   listen<ProgressEvent>('download-progress', (e) => cb(e.payload));
+export const onDetectAssist = (cb: (a: DetectAssist) => void): Promise<UnlistenFn> =>
+  listen<DetectAssist>('detect-assist', (e) => cb(e.payload));
 export const onLog = (cb: (l: LogLine) => void): Promise<UnlistenFn> =>
   listen<LogLine>('log', (e) => cb(e.payload));
 

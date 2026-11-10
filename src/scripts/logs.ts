@@ -5,7 +5,12 @@ import { toast } from './toast';
 import { state } from './state';
 
 const MAX_LINES = 1000;
-const LEVEL: Record<LogLine['level'], string> = { info: 'text-muted', warn: 'text-warning', error: 'text-danger' };
+// Contraste d'au moins 4,5:1 sur le fond du journal ; le niveau est aussi écrit, pas seulement coloré.
+const LEVEL: Record<LogLine['level'], { cls: string; tag: string }> = {
+  info: { cls: 'text-muted', tag: '' },
+  warn: { cls: 'text-warning', tag: 'avert. ' },
+  error: { cls: 'text-danger', tag: 'erreur ' },
+};
 
 function updateEmpty(): void {
   $('log-empty').hidden = $('log-list').childElementCount > 0;
@@ -14,10 +19,12 @@ function updateEmpty(): void {
 function addLine(l: LogLine): void {
   const box = $('log-list');
   const pinned = box.scrollHeight - box.scrollTop - box.clientHeight < 24;
-  const row = el('div', `${LEVEL[l.level] ?? 'text-muted'} break-words`);
-  const ts = el('span', 'mr-2 text-muted/60', new Date(l.ts).toLocaleTimeString('fr-FR'));
+  const level = LEVEL[l.level] ?? LEVEL.info;
+  const row = el('div', `${level.cls} break-words`);
+  const ts = el('span', 'mr-2 text-faint', new Date(l.ts).toLocaleTimeString('fr-FR'));
   row.append(ts);
-  if (l.downloadId != null) row.append(el('span', 'mr-2 text-muted/60', `#${l.downloadId}`));
+  if (l.downloadId != null) row.append(el('span', 'mr-2 text-faint', `#${l.downloadId}`));
+  if (level.tag) row.append(el('span', 'font-bold', level.tag));
   row.append(document.createTextNode(l.message));
   box.append(row);
   while (box.childElementCount > MAX_LINES) box.firstElementChild?.remove();

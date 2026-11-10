@@ -369,12 +369,11 @@ pub(crate) struct RawGap {
 
 /// Résultat de l'analyse d'un flux.
 #[derive(Clone, Debug)]
-#[allow(dead_code)] // `frame_dur` et `packets` ne servent qu'aux tests
 pub(crate) struct StreamAnalysis {
     pub first_pts: f64,
     pub end: f64,
+    #[cfg(test)]
     pub frame_dur: f64,
-    pub packets: usize,
     pub gaps: Vec<RawGap>,
 }
 
@@ -412,8 +411,8 @@ impl PacketStats {
         Some(StreamAnalysis {
             first_pts,
             end: self.max_end.max(last + frame),
+            #[cfg(test)]
             frame_dur: frame,
-            packets: self.pts.len(),
             gaps,
         })
     }
@@ -822,7 +821,7 @@ async fn scan_packets(output: &Path, selector: &str, ctx: &JobCtx) -> Result<Pac
             stats.push(pts, dur);
         }
         n += 1;
-        if n.is_multiple_of(8192) {
+        if n % 8192 == 0 {
             ctx.check()?;
         }
     }
@@ -1323,7 +1322,6 @@ mod tests {
             audio: Some(track(TrackKind::Audio, 10)),
             width: None,
             height: None,
-            bandwidth: None,
         };
         // Trou vidéo de 2 s à 30 s (segment 5) ; trou audio de 1 s à 13 s (segment 2).
         let mut p = regular(0.0, 0.04, 750);

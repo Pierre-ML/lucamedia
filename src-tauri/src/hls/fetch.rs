@@ -695,8 +695,8 @@ pub async fn download(req: &HlsRequest, ctx: &JobCtx) -> Result<HlsDownload> {
     ctx.info("Lecture de la playlist HLS");
     let (text, final_url) = fetch_text(&req.url, &req.http, retries, ctx).await?;
 
-    let (video_media, video_url, audio, width, height, bandwidth) = match playlist::parse(&text, &final_url)? {
-        Parsed::Media(m) => (m, final_url, None, None, None, None),
+    let (video_media, video_url, audio, width, height) = match playlist::parse(&text, &final_url)? {
+        Parsed::Media(m) => (m, final_url, None, None, None),
         Parsed::Master(master) => {
             let sel = playlist::pick_best(&master).ok_or_else(|| anyhow!("Playlist maître sans variante exploitable"))?;
             let v = &sel.variant;
@@ -716,7 +716,7 @@ pub async fn download(req: &HlsRequest, ctx: &JobCtx) -> Result<HlsDownload> {
                 }
                 None => None,
             };
-            (vm, vu, audio, v.width, v.height, v.bandwidth)
+            (vm, vu, audio, v.width, v.height)
         }
     };
 
@@ -769,7 +769,6 @@ pub async fn download(req: &HlsRequest, ctx: &JobCtx) -> Result<HlsDownload> {
         audio,
         width,
         height,
-        bandwidth,
     })
 }
 

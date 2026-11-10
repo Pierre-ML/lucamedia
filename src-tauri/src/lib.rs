@@ -1,13 +1,13 @@
-pub mod db;
-pub mod detect;
-pub mod hls;
-pub mod model;
-pub mod queue;
-pub mod settings;
-pub mod tools;
-pub mod updater;
-pub mod verify;
-pub mod ytdlp;
+mod db;
+mod detect;
+mod hls;
+mod model;
+mod queue;
+mod settings;
+mod tools;
+mod updater;
+mod verify;
+mod ytdlp;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

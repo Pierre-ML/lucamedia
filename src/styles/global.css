@@ -17,16 +17,16 @@
   --color-secondary: #26262a;
   --color-secondary-content: #f2f2f3;
   --color-accent: #e5383b;
-  --color-accent-content: #ffffff;
+  --color-accent-content: #0b0b0c;
   --color-neutral: #18181a;
   --color-neutral-content: #f2f2f3;
-  --color-info: #60a5fa;
+  --color-info: #7dbbff;
   --color-info-content: #0b0b0c;
-  --color-success: #10b981;
+  --color-success: #4ade80;
   --color-success-content: #0b0b0c;
-  --color-warning: #f59e0b;
+  --color-warning: #fbbf24;
   --color-warning-content: #0b0b0c;
-  --color-error: #ff4d4f;
+  --color-error: #ff6b6d;
   --color-error-content: #0b0b0c;
   --radius-selector: 0.5rem;
   --radius-field: 0.5rem;
@@ -38,14 +38,20 @@
   --noise: 0;
 }
 
-/* Jetons de l'app rebranchés sur les variables daisyUI */
+/* Jetons de l'app. Tous les textes atteignent 4,5:1 sur les fonds où ils sont posés ;
+   les bordures de champs et de boutons (control) 3:1. */
 @theme inline {
   --color-bg: var(--color-base-100);
   --color-fg: var(--color-base-content);
   --color-surface: var(--color-base-200);
-  --color-border: var(--color-base-300);
+  --color-raised: var(--color-base-300);
   --color-danger: var(--color-error);
-  --color-muted: #8e8e94;
+  --color-border: #34343a; /* traits de structure (cartes, séparateurs) */
+  --color-control: #767680; /* contour des champs, boutons, interrupteurs */
+  --color-control-dim: #6a6a72; /* contour d'un contrôle désactivé */
+  --color-muted: #b8b8be; /* texte secondaire */
+  --color-faint: #9a9aa2; /* méta, horodatages, aide discrète */
+  --color-disabled: #3a3a40; /* fond d'un bouton principal désactivé */
   --color-sidebar: #070708;
   --color-code: #101012;
 }
@@ -72,33 +78,41 @@
   html, body { height: 100%; overflow: hidden; }
   html { font-size: 16px; }
   body { font-family: var(--font-sans); line-height: 1.6; background: var(--color-bg); color: var(--color-fg); -webkit-font-smoothing: antialiased; }
-  :focus-visible { outline: 2px solid color-mix(in oklab, var(--color-fg) 40%, transparent); outline-offset: 2px; }
-  * { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
+  :focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  * { scrollbar-width: thin; scrollbar-color: var(--color-control-dim) transparent; }
   button { cursor: pointer; }
   button:disabled { cursor: not-allowed; }
 }
 
 @layer components {
   .panel { @apply rounded-xl border border-border bg-surface p-5; }
-  .resize-handle { @apply absolute z-20 touch-none outline-none; }
-  .resize-handle::after { content: ''; @apply pointer-events-none absolute bg-transparent transition-colors duration-150 motion-reduce:transition-none; }
-  .resize-handle:hover::after, .resize-handle:focus-visible::after { @apply bg-fg/20; }
-  .resize-handle[data-dragging='true']::after { @apply bg-fg/40; }
-  .resize-handle-x { @apply inset-y-0 w-1.5 cursor-col-resize; }
-  .resize-handle-x::after { @apply inset-y-0 left-1/2 w-px -translate-x-1/2; }
-  .resize-handle-y { @apply inset-x-0 h-1.5 cursor-row-resize; }
-  .resize-handle-y::after { @apply inset-x-0 top-1/2 h-px -translate-y-1/2; }
-  .field { @apply h-10 w-full rounded-lg border border-border bg-transparent px-3 text-sm text-fg transition-colors duration-150 placeholder:text-muted/60 hover:border-fg/20 focus:border-fg/40 focus-visible:outline-2 focus-visible:outline-fg/20 focus-visible:outline-offset-0; }
-  .field-label { @apply mb-1.5 block text-sm font-medium; }
-  .button-primary, .button-ghost, .button-danger { @apply inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-medium transition-[background-color,transform] duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none; }
-  .button-primary { @apply bg-fg text-bg hover:bg-fg/90 focus-visible:outline-fg/40; }
-  .button-ghost { @apply border border-border bg-transparent text-fg hover:bg-fg/5; }
-  .button-danger { @apply border border-danger/40 text-danger hover:bg-danger/10; }
-  .button-sm { @apply !h-8 !px-3 !text-xs; }
-  .nav-item { @apply flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] text-muted transition-colors duration-200 hover:bg-white/5 hover:text-fg; }
-  .nav-item[aria-current="true"] { @apply bg-white/10 text-fg; }
-  .pill { @apply inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium; }
-  .toggle-switch { @apply relative h-5 w-9 shrink-0 cursor-pointer appearance-none rounded-full border border-border bg-code transition-colors duration-150 checked:border-fg checked:bg-fg disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none; }
-  .toggle-switch::before { @apply absolute left-0.5 top-0.5 block size-3.5 rounded-full bg-muted transition-transform duration-150 content-[''] motion-reduce:transition-none; }
-  .toggle-switch:checked::before { @apply translate-x-4 bg-bg; }
+
+  .field { @apply h-10 w-full rounded-lg border border-control bg-bg px-3 text-sm text-fg transition-colors duration-150 placeholder:text-faint hover:border-faint focus:border-fg focus-visible:outline-offset-1 disabled:border-control-dim disabled:text-faint; }
+  .field-label { @apply block text-sm font-medium text-fg; }
+  .field-help { @apply text-sm text-muted; }
+
+  .button-primary, .button-ghost, .button-danger { @apply inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-medium transition-[background-color,border-color,transform] duration-150 active:scale-[0.98] disabled:active:scale-100 motion-reduce:transition-none; }
+  .button-primary { @apply bg-fg text-bg hover:bg-white disabled:bg-disabled disabled:text-muted; }
+  .button-ghost { @apply border border-control bg-transparent text-fg hover:border-faint hover:bg-white/10 disabled:border-control-dim disabled:bg-transparent disabled:text-faint; }
+  .button-danger { @apply border border-accent bg-transparent text-danger hover:bg-danger/15 disabled:border-control-dim disabled:bg-transparent disabled:text-faint; }
+  .button-lg { @apply !h-12 !px-7 !text-base; }
+  .button-sm { @apply !h-8 !px-3 !text-[13px]; }
+  .button-text { @apply inline-flex h-8 shrink-0 items-center gap-1 rounded-md px-2 text-sm text-muted underline-offset-4 transition-colors hover:text-fg hover:underline motion-reduce:transition-none; }
+  .button-text[aria-expanded="true"] { @apply text-fg; }
+  .button-text-danger { @apply text-danger hover:text-danger; }
+
+  .disclosure { @apply flex w-fit cursor-pointer select-none list-none items-center gap-2 rounded-md text-sm text-muted transition-colors hover:text-fg motion-reduce:transition-none; }
+  .disclosure::-webkit-details-marker { display: none; }
+  .disclosure::before { content: ''; @apply size-1.5 shrink-0 -rotate-45 border-b-2 border-r-2 border-current transition-transform duration-150 motion-reduce:transition-none; }
+  details[open] > .disclosure::before, .disclosure[aria-expanded="true"]::before { @apply rotate-45; }
+
+  .nav-item { @apply flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-muted transition-colors duration-150 hover:bg-white/10 hover:text-fg motion-reduce:transition-none; }
+  .nav-item[aria-current="true"] { @apply bg-white/15 font-medium text-fg; }
+
+  .pill { @apply inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium; }
+
+  .toggle-switch { @apply relative h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full border border-control bg-code transition-colors duration-150 checked:border-fg checked:bg-fg disabled:cursor-not-allowed disabled:border-control-dim motion-reduce:transition-none; }
+  .toggle-switch::before { @apply absolute left-1 top-1 block size-4 rounded-full bg-muted transition-transform duration-150 content-[''] motion-reduce:transition-none; }
+  .toggle-switch:checked::before { @apply translate-x-5 bg-bg; }
+  .toggle-switch:disabled::before { @apply bg-control-dim; }
 }

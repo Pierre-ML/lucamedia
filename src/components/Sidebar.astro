@@ -8,24 +8,23 @@ const items = [
 ];
 ---
 
-<aside id="sidebar" class="relative flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
-  <div class="resize-handle resize-handle-x right-0 translate-x-1/2" data-resize="sidebar" role="separator" aria-orientation="vertical" aria-label="Redimensionner la barre latérale" tabindex="0" aria-valuenow="256" aria-valuemin="180" aria-valuemax="420"></div>
-  <div class="flex h-9 items-center gap-2 px-5 pt-6 pb-4 text-fg">
-    <Animal id="ours" class="size-7 shrink-0" />
-    <span class="whitespace-nowrap font-serif text-base font-semibold tracking-tight">Ursa</span>
+<aside class="flex w-56 shrink-0 flex-col border-r border-border bg-sidebar">
+  <div class="flex items-center gap-2.5 px-5 pt-6 pb-2 text-fg">
+    <Animal id="ours" class="size-8 shrink-0" />
+    <span class="font-serif text-lg font-semibold tracking-tight">Ursa</span>
   </div>
 
-  <nav class="flex flex-1 flex-col gap-0.5 px-3 pt-4" aria-label="Navigation">
+  <nav class="flex flex-1 flex-col gap-1 px-3 pt-6" aria-label="Navigation">
     {items.map((i) => (
       <button type="button" class="nav-item" data-nav={i.id} aria-current="false">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="shrink-0" stroke-linecap="round" stroke-linejoin="round"><path d={i.d}></path></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="shrink-0" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={i.d}></path></svg>
         <span>{i.label}</span>
       </button>
     ))}
   </nav>
 
-  <div class="flex items-center gap-2 border-t border-border px-5 py-3 text-xs text-muted">
-    <span id="tools-dot" class="size-2 rounded-full bg-border"></span>
+  <div class="flex items-center gap-2 border-t border-border px-5 py-4 text-sm text-muted">
+    <span id="tools-dot" class="size-2.5 shrink-0 rounded-full bg-faint" aria-hidden="true"></span>
     <span id="tools-text" class="truncate">Outils…</span>
   </div>
 </aside>

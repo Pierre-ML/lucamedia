@@ -1,0 +1,17 @@
+---
+// Ligne de réglage : titre + phrase d'explication à gauche, contrôle (slot) à droite.
+interface Props {
+  for: string;
+  label: string;
+  help: string;
+}
+const { for: target, label, help } = Astro.props;
+---
+
+<div class="flex items-center justify-between gap-6 py-4">
+  <div class="min-w-0">
+    <label class="field-label" for={target}>{label}</label>
+    <p class="field-help mt-0.5">{help}</p>
+  </div>
+  <slot />
+</div>

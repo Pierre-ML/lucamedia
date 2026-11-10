@@ -1,7 +1,7 @@
-export const SCREENS = ['downloads', 'logs', 'settings'] as const;
-export type Screen = (typeof SCREENS)[number];
+const SCREENS = ['downloads', 'logs', 'settings'] as const;
+type Screen = (typeof SCREENS)[number];
 
-export function showScreen(name: Screen): void {
+function showScreen(name: Screen): void {
   document.querySelectorAll<HTMLElement>('[data-screen]').forEach((el) => {
     el.hidden = el.dataset.screen !== name;
   });

@@ -4,6 +4,8 @@
 //! piloté par le protocole DevTools (`browser`).
 
 pub mod browser;
+#[cfg(test)]
+mod browser_live;
 pub mod direct;
 pub mod probe;
 
@@ -82,8 +84,16 @@ pub fn browser_status(choice: BrowserChoice) -> BrowserStatus {
     }
 }
 
-/// Message d'erreur quand aucune étape n'a trouvé de flux.
-pub(crate) const MSG_RIEN_TROUVE: &str = "Aucun flux vidéo détecté sur cette page. Causes possibles : la page ne contient pas de vidéo détectable, la lecture nécessite une connexion (compte, abonnement), ou le flux est protégé par DRM, ce que le logiciel ne télécharge pas.";
+/// Mode assisté : la fenêtre du navigateur a été fermée avant qu'un flux ne soit capturé.
+pub(crate) const MSG_ASSIST_FERME: &str = "Aucune vidéo détectée : la fenêtre du navigateur a été fermée avant le lancement de la lecture. Relancez le téléchargement, puis lancez la lecture de la vidéo dans la fenêtre qui s'ouvre.";
+
+/// Mode assisté : le délai de 3 minutes est écoulé sans flux capturé.
+pub(crate) const MSG_ASSIST_DELAI: &str = "Aucune vidéo détectée : délai de 3 minutes dépassé dans la fenêtre du navigateur. Causes possibles : la lecture nécessite une connexion (compte, abonnement), la page ne contient pas de vidéo, ou le flux est protégé par DRM, ce que le logiciel ne télécharge pas.";
+
+/// Échec définitif du mode assisté : inutile de rouvrir la fenêtre à chaque nouvelle tentative.
+pub fn is_assist_failure(message: &str) -> bool {
+    message.contains(MSG_ASSIST_FERME) || message.contains(MSG_ASSIST_DELAI)
+}
 
 /// Message d'erreur quand le flux est protégé par DRM.
 pub(crate) const MSG_DRM: &str = "Flux protégé par DRM : le logiciel ne télécharge pas les contenus protégés.";
@@ -129,22 +139,19 @@ pub async fn resolve(input_url: &str, hint: &ResolveHint, ctx: &JobCtx) -> anyho
         }
     }
 
-    // 3. Navigateur piloté
+    // 3. Navigateur piloté : en arrière-plan, puis visible si rien n'est trouvé (mode assisté).
+    //    Les erreurs (DRM, navigateur absent, page inaccessible, fenêtre fermée, délai) sont
+    //    remontées telles quelles.
     ctx.check()?;
     ctx.info("Détection : ouverture de la page dans le navigateur…");
     match browser::resolve(input_url, hint, ctx).await {
-        Ok(Some(media)) => {
+        Ok(media) => {
             ctx.info(format!("Flux détecté dans la page : {}", media.url));
-            return Ok(media);
+            Ok(media)
         }
-        Ok(None) => ctx.warn("Aucun flux détecté dans la page."),
         Err(e) => {
             ctx.check()?;
-            // Erreurs « définitives » (DRM, navigateur absent, page inaccessible) : on les remonte telles quelles.
-            return Err(e);
+            Err(e)
         }
     }
-
-    // 4. Rien trouvé
-    anyhow::bail!(MSG_RIEN_TROUVE)
 }
