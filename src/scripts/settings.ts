@@ -53,7 +53,7 @@ async function uninstall(): Promise<void> {
   const b = $<HTMLButtonElement>('app-uninstall');
   try {
     const { ask } = await import('@tauri-apps/plugin-dialog');
-    const ok = await ask("Désinstaller Ursa ? L'application va se fermer. Les vidéos téléchargées sont conservées.", {
+    const ok = await ask("Désinstaller Lucamedia ? L'application va se fermer. Les vidéos téléchargées sont conservées.", {
       title: 'Désinstaller',
       kind: 'warning',
       okLabel: 'Désinstaller',

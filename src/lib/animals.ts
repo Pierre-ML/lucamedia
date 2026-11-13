@@ -1,7 +1,7 @@
 // Animaux low-poly de l'univers Lucania, viewBox 0 0 64 64.
 // Format : facets = polygones { points, opacity } ; eyes = cercles { cx, cy, r } ;
 // accents = petits triangles { points }. Tout est rendu en currentColor (aucun rouge).
-// hibou, corbeau et cerf sont copiés à l'identique de Lucania ; l'ours est propre à Ursa.
+// hibou, corbeau et cerf sont copiés à l'identique de Lucania ; l'ours est propre à Lucamedia.
 //
 // Table des rôles :
 //   ours    = logo + mascotte (états vides, bandeau de mise à jour)

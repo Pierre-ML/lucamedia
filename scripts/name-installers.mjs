@@ -1,11 +1,11 @@
 // Donne aux installateurs un NOM FIXE, quelle que soit la version, après `tauri build` et build-updater.mjs.
 //
-//   Ursa_<version>_x64-setup.exe   ->  Ursa-Setup.exe
-//   Ursa_<version>_x64-update.exe  ->  Ursa-Update.exe
+//   Lucamedia_<version>_x64-setup.exe   ->  Lucamedia-Setup.exe
+//   Lucamedia_<version>_x64-update.exe  ->  Lucamedia-Update.exe
 //
 // Les copies vont dans un dossier dédié (target/release/bundle/release), vidé puis recréé à chaque fois :
 // c'est lui que le workflow GitHub publie. Nom stable = une seule exception antivirus et lien de
-// téléchargement direct stable (releases/latest/download/Ursa-Setup.exe).
+// téléchargement direct stable (releases/latest/download/Lucamedia-Setup.exe).
 //
 // Variables d'environnement facultatives (le comportement par défaut ne change pas sans elles) :
 //   MDL_BUNDLE_DIR  dossier contenant les exe versionnés (défaut : target/release/bundle/nsis)
@@ -41,8 +41,8 @@ const outDir = path.join(path.dirname(bundleDir), 'release');
 
 // 3. Fichiers source : les deux doivent exister
 const pairs = [
-  [`${productName}_${version}_x64-setup.exe`, 'Ursa-Setup.exe'],
-  [`${productName}_${version}_x64-update.exe`, 'Ursa-Update.exe'],
+  [`${productName}_${version}_x64-setup.exe`, 'Lucamedia-Setup.exe'],
+  [`${productName}_${version}_x64-update.exe`, 'Lucamedia-Update.exe'],
 ];
 const missing = pairs.map(([src]) => path.join(bundleDir, src)).filter((p) => !isFile(p));
 if (missing.length) {

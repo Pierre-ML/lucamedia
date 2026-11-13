@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Récupère les trois sidecars d'Ursa et les installe en src-tauri/binaries/<nom>-<triple>[.exe] :
+// Récupère les trois sidecars de Lucamedia et les installe en src-tauri/binaries/<nom>-<triple>[.exe] :
 //   - ffmpeg et ffprobe (même archive statique BtbN sous Windows/Linux) ;
 //   - yt-dlp (exécutable autonome publié par yt-dlp sur GitHub).
 // Node >= 20, aucune dépendance npm.
@@ -158,7 +158,7 @@ async function main() {
   } else {
     const srcs = SOURCES[target];
     if (!srcs) die(`cible non prise en charge : ${target}. Cibles : ${Object.keys(SOURCES).join(", ")}.`);
-    const tmp = mkdtempSync(join(tmpdir(), "ursa-fetch-"));
+    const tmp = mkdtempSync(join(tmpdir(), "lucamedia-fetch-"));
     try {
       // Une archive n'est téléchargée et extraite qu'une fois, même si elle fournit ffmpeg ET ffprobe.
       const extracted = new Map(); // url -> dossier d'extraction

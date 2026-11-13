@@ -2273,6 +2273,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4050469837a6ff301cd14c1f8f24f88549e6d548f24f64e2148eb0f72cebc51f"
 
 [[package]]
+name = "lucamedia"
+version = "1.0.1"
+dependencies = [
+ "aes",
+ "anyhow",
+ "cbc",
+ "dirs 6.0.0",
+ "futures",
+ "regex",
+ "reqwest 0.12.28",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-opener",
+ "tempfile",
+ "tokio",
+ "tokio-tungstenite",
+ "tokio-util",
+ "url",
+ "urlencoding",
+]
+
+[[package]]
 name = "markup5ever"
 version = "0.39.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4760,32 +4786,6 @@ dependencies = [
  "regex",
  "serde",
  "url",
-]
-
-[[package]]
-name = "ursa"
-version = "1.0.1"
-dependencies = [
- "aes",
- "anyhow",
- "cbc",
- "dirs 6.0.0",
- "futures",
- "regex",
- "reqwest 0.12.28",
- "rusqlite",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-opener",
- "tempfile",
- "tokio",
- "tokio-tungstenite",
- "tokio-util",
- "url",
- "urlencoding",
 ]
 
 [[package]]

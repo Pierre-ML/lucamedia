@@ -1,10 +1,10 @@
 ; MDL: template NSIS personnalisé (bundle.windows.nsis.template), basé sur le template officiel
 ; MDL: de tauri-bundler au tag tauri-cli-v2.12.1 (crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi).
 ; MDL: chaque modification est marquée « ; MDL: ». Ce template produit DEUX exe :
-; MDL:  - SETUP (rendu par tauri build, sans define) : première installation UNIQUEMENT. Si Ursa est
+; MDL:  - SETUP (rendu par tauri build, sans define) : première installation UNIQUEMENT. Si Lucamedia est
 ; MDL:    déjà installé, message (utiliser l'exe de mise à jour) puis sortie dans .onInit.
 ; MDL:  - UPDATE (même rendu recompilé par scripts/build-updater.mjs avec /DMDL_UPDATER) : refuse si
-; MDL:    Ursa n'est pas installé ou si une version plus récente l'est ; sinon installe par-dessus
+; MDL:    Lucamedia n'est pas installé ou si une version plus récente l'est ; sinon installe par-dessus
 ; MDL:    l'installation existante (même dossier, pages Installation puis Fin seulement), ce qui répare
 ; MDL:    aussi une installation abîmée. Rien n'est désinstallé. Lancé par l'app (bouton « mise à
 ; MDL:    jour », src-tauri/src/updater.rs) avec /MDL_WAITPID=<pid> : .onInit attend d'abord, sans
@@ -20,7 +20,7 @@
 ; MDL: (RequestExecutionLevel user, SetShellVarContext current, SHCTX = HKCU).
 ; MDL: Sidecars ffmpeg, ffprobe, yt-dlp : les .exe (bundle.externalBin) sont copiés à côté de l'exe principal
 ; MDL: par la boucle « binaries » de la section Install, et supprimés par celle du désinstallateur.
-; MDL: Contrat avec l'app (src-tauri/src/updater.rs) : Ursa-Update.exe /MDL_WAITPID=<pid>.
+; MDL: Contrat avec l'app (src-tauri/src/updater.rs) : Lucamedia-Update.exe /MDL_WAITPID=<pid>.
 Unicode true
 ManifestDPIAware true
 ; Add in `dpiAwareness` `PerMonitorV2` to manifest for Windows 10 1607+ (note this should not affect lower versions since they should be able to ignore this and pick up `dpiAware` `true` set by `ManifestDPIAware true`)
@@ -110,7 +110,7 @@ Var NoShortcutMode
 Var WixMode ; MDL: toujours 0 (migration WiX supprimée, voir .onInit)
 Var OldMainBinaryName
 ; MDL: résultat de la détection d'une installation existante (MdlDetectInstall, dans .onInit)
-Var MdlInstalled         ; 1 si Ursa est déjà installé (registre ou dossier existant)
+Var MdlInstalled         ; 1 si Lucamedia est déjà installé (registre ou dossier existant)
 Var MdlInstalledVersion  ; version installée (DisplayVersion, vide si inconnue)
 Var MdlInstalledDir      ; dossier d'installation existant (sans guillemets ni « \ » final)
 Var MdlTmp               ; brouillon
@@ -122,8 +122,8 @@ Var MdlLaunched
 ; MDL: lance l'app installée. installMode currentUser : l'installateur n'est pas élevé, Exec
 ; MDL: (CreateProcess direct) suffit. nsis_tauri_utils::RunAsUser (CreateProcessWithTokenW avec le
 ; MDL: jeton d'explorer, appel au service seclogon) ne sert qu'à quitter l'élévation : sur la page de
-; MDL: fin, cet appel bloquait la fenêtre (« Ursa-Update.exe a cessé d'interagir », AppHangXProcB1)
-; MDL: et laissait un ursa.exe à moitié créé. Conservé pour les autres modes d'installation.
+; MDL: fin, cet appel bloquait la fenêtre (« Lucamedia-Update.exe a cessé d'interagir », AppHangXProcB1)
+; MDL: et laissait un lucamedia.exe à moitié créé. Conservé pour les autres modes d'installation.
 !macro MDL_RUN_APP
   !if "${INSTALLMODE}" == "currentUser"
     Exec '"$INSTDIR\${MAINBINARYNAME}.exe"'
@@ -133,7 +133,7 @@ Var MdlLaunched
 !macroend
 
 ; MDL: retire les guillemets de début et de fin d'un chemin lu dans le registre (ex. InstallLocation
-; MDL: est écrit "%LOCALAPPDATA%\Programs\Ursa" développé, AVEC guillemets). VAR ne doit pas être $MdlTmp.
+; MDL: est écrit "%LOCALAPPDATA%\Programs\Lucamedia" développé, AVEC guillemets). VAR ne doit pas être $MdlTmp.
 ; MDL: Défini ici (et non avec les autres fonctions Mdl) car utilisé dès RestorePreviousInstallLocation.
 !macro MDL_UNQUOTE VAR
   StrCpy $MdlTmp ${VAR} 1
@@ -169,7 +169,7 @@ Var MdlLaunched
 Name "${PRODUCTNAME}"
 BrandingText "${COPYRIGHT}"
 OutFile "${OUTFILE}"
-; MDL: titre de la fenêtre de l'exe de mise à jour (« Mise à jour de Ursa »)
+; MDL: titre de la fenêtre de l'exe de mise à jour (« Mise à jour de Lucamedia »)
 !ifdef MDL_UPDATER
   Caption "$(mdlUpdateTitle)"
 !endif
@@ -451,7 +451,7 @@ FunctionEnd
   !include "{{this}}"
 {{/each}}
 
-; MDL: textes Ursa (bundle.windows.nsis.languages = French, English ; langue choisie
+; MDL: textes Lucamedia (bundle.windows.nsis.languages = French, English ; langue choisie
 ; MDL: automatiquement selon celle de Windows). $MdlInstalledVersion est remplacé à l'exécution
 ; MDL: par la version installée. Chaque texte n'est compilé que dans l'exe qui l'utilise.
 !ifdef LANG_FRENCH
@@ -466,11 +466,11 @@ LangString mdlSetupAlreadyRunning ${LANG_FRENCH} "Une installation ou une mise �
 LangString ^FileError ${LANG_FRENCH} "Impossible d'écrire le fichier :$\r$\n$\r$\n$0$\r$\n$\r$\nVotre antivirus bloque probablement l'installation de ${PRODUCTNAME} (le programme n'est pas encore signé). Ajoutez une exception pour ce programme d'installation et pour le dossier $INSTDIR, puis cliquez sur Recommencer.$\r$\n$\r$\nAbandonner annule l'installation. Ignorer passe ce fichier : ${PRODUCTNAME} serait alors incomplet."
 LangString ^FileError_NoIgnore ${LANG_FRENCH} "Impossible d'écrire le fichier :$\r$\n$\r$\n$0$\r$\n$\r$\nVotre antivirus bloque probablement l'installation de ${PRODUCTNAME} (le programme n'est pas encore signé). Ajoutez une exception pour ce programme d'installation et pour le dossier $INSTDIR, puis cliquez sur Recommencer.$\r$\n$\r$\nAnnuler arrête l'installation."
 !ifndef MDL_UPDATER
-; MDL: setup lancé alors que Ursa est déjà installé
-LangString mdlAlreadyInstalledUseUpdate ${LANG_FRENCH} "${PRODUCTNAME} est déjà installé sur cet ordinateur.$\r$\n$\r$\nPour le mettre à jour, utilisez le fichier Ursa-Update.exe (disponible sur la page des versions, à côté de ce programme d'installation)."
+; MDL: setup lancé alors que Lucamedia est déjà installé
+LangString mdlAlreadyInstalledUseUpdate ${LANG_FRENCH} "${PRODUCTNAME} est déjà installé sur cet ordinateur.$\r$\n$\r$\nPour le mettre à jour, utilisez le fichier Lucamedia-Update.exe (disponible sur la page des versions, à côté de ce programme d'installation)."
 !else
 ; MDL: update : refus (pas installé, version plus récente), titres des pages
-LangString mdlNotInstalledUseSetup ${LANG_FRENCH} "${PRODUCTNAME} n'est pas installé sur cet ordinateur.$\r$\n$\r$\nUtilisez d'abord le programme d'installation Ursa-Setup.exe (disponible sur la page des versions)."
+LangString mdlNotInstalledUseSetup ${LANG_FRENCH} "${PRODUCTNAME} n'est pas installé sur cet ordinateur.$\r$\n$\r$\nUtilisez d'abord le programme d'installation Lucamedia-Setup.exe (disponible sur la page des versions)."
 LangString mdlNewerInstalled ${LANG_FRENCH} "Une version plus récente de ${PRODUCTNAME} ($MdlInstalledVersion) est déjà installée.$\r$\n$\r$\nCette mise à jour (version ${VERSION}) n'est pas nécessaire."
 LangString mdlUpdateTitle ${LANG_FRENCH} "Mise à jour de ${PRODUCTNAME}"
 LangString mdlUpdateSubtitle ${LANG_FRENCH} "Installation de la version ${VERSION}. Vos réglages et vos sessions sont conservés."
@@ -489,11 +489,11 @@ LangString mdlSetupAlreadyRunning ${LANG_ENGLISH} "An installation or update of 
 LangString ^FileError ${LANG_ENGLISH} "Unable to write the file:$\r$\n$\r$\n$0$\r$\n$\r$\nYour antivirus is probably blocking the installation of ${PRODUCTNAME} (the program is not signed yet). Add an exception for this installer and for the folder $INSTDIR, then click Retry.$\r$\n$\r$\nAbort cancels the installation. Ignore skips this file: ${PRODUCTNAME} would then be incomplete."
 LangString ^FileError_NoIgnore ${LANG_ENGLISH} "Unable to write the file:$\r$\n$\r$\n$0$\r$\n$\r$\nYour antivirus is probably blocking the installation of ${PRODUCTNAME} (the program is not signed yet). Add an exception for this installer and for the folder $INSTDIR, then click Retry.$\r$\n$\r$\nCancel stops the installation."
 !ifndef MDL_UPDATER
-; MDL: setup lancé alors que Ursa est déjà installé
-LangString mdlAlreadyInstalledUseUpdate ${LANG_ENGLISH} "${PRODUCTNAME} is already installed on this computer.$\r$\n$\r$\nTo update it, use the file Ursa-Update.exe (available on the releases page, next to this installer)."
+; MDL: setup lancé alors que Lucamedia est déjà installé
+LangString mdlAlreadyInstalledUseUpdate ${LANG_ENGLISH} "${PRODUCTNAME} is already installed on this computer.$\r$\n$\r$\nTo update it, use the file Lucamedia-Update.exe (available on the releases page, next to this installer)."
 !else
 ; MDL: update : refus (pas installé, version plus récente), titres des pages
-LangString mdlNotInstalledUseSetup ${LANG_ENGLISH} "${PRODUCTNAME} is not installed on this computer.$\r$\n$\r$\nPlease use the installer Ursa-Setup.exe first (available on the releases page)."
+LangString mdlNotInstalledUseSetup ${LANG_ENGLISH} "${PRODUCTNAME} is not installed on this computer.$\r$\n$\r$\nPlease use the installer Lucamedia-Setup.exe first (available on the releases page)."
 LangString mdlNewerInstalled ${LANG_ENGLISH} "A newer version of ${PRODUCTNAME} ($MdlInstalledVersion) is already installed.$\r$\n$\r$\nThis update (version ${VERSION}) is not needed."
 LangString mdlUpdateTitle ${LANG_ENGLISH} "${PRODUCTNAME} Update"
 LangString mdlUpdateSubtitle ${LANG_ENGLISH} "Installing version ${VERSION}. Your settings and sessions are kept."
@@ -512,10 +512,10 @@ Function .onInit
   ; MDL: NSIS est une boîte de dialogue de premier niveau de classe « #32770 », dont le titre est la
   ; MDL: Caption de l'exe, suivie d'une espace sur les pages MUI2 (Caption " " de page) et sans
   ; MDL: espace sur la page Bienvenue. Titres testés (titre exact, avec et sans espace finale) :
-  ; MDL:   setup  : « Installation de Ursa » (French.nlf ^SetupCaption), « Ursa Setup » (English.nlf)
-  ; MDL:   update : « Mise à jour de Ursa », « Ursa Update » (LangString mdlUpdateTitle)
+  ; MDL:   setup  : « Installation de Lucamedia » (French.nlf ^SetupCaption), « Lucamedia Setup » (English.nlf)
+  ; MDL:   update : « Mise à jour de Lucamedia », « Lucamedia Update » (LangString mdlUpdateTitle)
   ; MDL: Le setup et l'update se détectent donc mutuellement, quelle que soit la langue. Le
-  ; MDL: désinstallateur (« Désinstallation de Ursa » / « Ursa Uninstall ») n'est PAS bloquant.
+  ; MDL: désinstallateur (« Désinstallation de Lucamedia » / « Lucamedia Uninstall ») n'est PAS bloquant.
   ; MDL: Pendant .onInit, la fenêtre de l'instance courante n'est pas encore créée : FindWindow ne peut
   ; MDL: pas la trouver elle-même. Limites acceptées : une instance silencieuse (/S, sans fenêtre)
   ; MDL: n'est pas détectée, et une MessageBox d'une autre instance (même titre) l'est.
@@ -608,7 +608,7 @@ Function .onInit
         Pop $0
       ${EndIf}
     ${EndIf}
-    ; MDL: UPDATE : Ursa doit être installé
+    ; MDL: UPDATE : Lucamedia doit être installé
     ${If} $MdlInstalled <> 1
       MessageBox MB_ICONINFORMATION|MB_OK "$(mdlNotInstalledUseSetup)" /SD IDOK
       Abort
@@ -852,7 +852,7 @@ Section Install
   !insertmacro MUI_STARTMENU_WRITE_END
 
   !ifdef MDL_UPDATER
-    ; MDL: update : raccourci Bureau mis à jour s'il existe (et pointe vers Ursa), jamais créé,
+    ; MDL: update : raccourci Bureau mis à jour s'il existe (et pointe vers Lucamedia), jamais créé,
     ; MDL: quel que soit le mode (pas de case sur la page de fin)
     Call MdlUpdateDesktopShortcut
   !else
@@ -1134,7 +1134,7 @@ FunctionEnd
 
 ; MDL: détection (dans .onInit, après SetContext) d'une installation existante. Sorties :
 ; MDL:   $MdlInstalled        = 1 si ${UNINSTKEY} a un UninstallString ou un DisplayVersion, OU si
-; MDL:                              le dossier enregistré existe et contient un fichier de Ursa
+; MDL:                              le dossier enregistré existe et contient un fichier de Lucamedia
 ; MDL:                              (${MAINBINARYNAME}.exe ou uninstall.exe) ; sinon 0.
 ; MDL:                              Un dossier enregistré mais vide ou absent (reste d'une ancienne
 ; MDL:                              désinstallation, qui ne supprime pas toujours ${MANUPRODUCTKEY})

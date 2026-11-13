@@ -1,5 +1,5 @@
 //! Mise à jour de l'app : compare la version installée à la dernière release GitHub, puis
-//! télécharge et lance `Ursa-Update.exe` (l'updater attend la fin de l'app, copie les
+//! télécharge et lance `Lucamedia-Update.exe` (l'updater attend la fin de l'app, copie les
 //! fichiers puis relance l'app lui-même).
 //!
 //! - `app_check_update` : interroge l'API GitHub (release la plus récente).
@@ -28,9 +28,9 @@ use serde::{Deserialize, Serialize};
 const LATEST_API: &str = "https://api.github.com/repos/Pierre-ML/telechargment_m3u8/releases/latest";
 #[cfg(windows)]
 const UPDATER_URL: &str =
-    "https://github.com/Pierre-ML/telechargment_m3u8/releases/latest/download/Ursa-Update.exe";
+    "https://github.com/Pierre-ML/telechargment_m3u8/releases/latest/download/Lucamedia-Update.exe";
 #[cfg(windows)]
-const UPDATER_FILE: &str = "Ursa-Update.exe";
+const UPDATER_FILE: &str = "Lucamedia-Update.exe";
 /// Taille maximale acceptée pour l'exe de mise à jour.
 #[cfg(windows)]
 const MAX_BYTES: u64 = 300 * 1024 * 1024;
@@ -102,7 +102,7 @@ fn allowed_host(url: &Url) -> bool {
 
 fn build_client(version: &str) -> Result<Client, String> {
     Client::builder()
-        .user_agent(format!("Ursa/{version}"))
+        .user_agent(format!("Lucamedia/{version}"))
         .https_only(true)
         .connect_timeout(Duration::from_secs(15))
         .read_timeout(Duration::from_secs(60))

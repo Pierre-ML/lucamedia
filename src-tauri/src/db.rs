@@ -146,7 +146,7 @@ pub struct Db {
 }
 
 impl Db {
-    /// Ouvre (ou crée) la base `<app_data_dir>/ursa.db`.
+    /// Ouvre (ou crée) la base `<app_data_dir>/lucamedia.db`.
     pub fn open(path: &Path) -> anyhow::Result<Self> {
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)
@@ -505,7 +505,7 @@ mod tests {
     #[test]
     fn paused_state_persists_across_reopen() {
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("sub").join("ursa.db");
+        let path = dir.path().join("sub").join("lucamedia.db");
         {
             let db = Db::open(&path).unwrap();
             assert!(!db.is_paused());

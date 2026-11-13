@@ -1,9 +1,9 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Ursa",
-  "mainBinaryName": "ursa",
+  "productName": "Lucamedia",
+  "mainBinaryName": "lucamedia",
   "version": "1.0.1",
-  "identifier": "com.ursa.app",
+  "identifier": "com.lucamedia.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:4321",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Ursa",
+        "title": "Lucamedia",
         "width": 1280,
         "height": 820,
         "minWidth": 960,

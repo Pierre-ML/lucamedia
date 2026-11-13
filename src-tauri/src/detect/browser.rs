@@ -594,7 +594,7 @@ fn new_profile_dir() -> PathBuf {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_nanos())
         .unwrap_or(0);
-    std::env::temp_dir().join(format!("ursa-browser-{}-{nanos}", std::process::id()))
+    std::env::temp_dir().join(format!("lucamedia-browser-{}-{nanos}", std::process::id()))
 }
 
 /// Lit `DevToolsActivePort` : port et chemin WebSocket du navigateur.
@@ -726,7 +726,7 @@ async fn kill_tree(pid: u32) {
 /// réels d'EME (événement `encrypted`, `setMediaKeys` avec des clés) et gomme les signes
 /// d'automatisation les plus courants (`navigator.webdriver`, `window.chrome`, langues).
 const PAGE_HOOK_JS: &str = r#"(() => { try {
-  const mark = () => { try { window.__ursaDrm = true; } catch (e) {} };
+  const mark = () => { try { window.__lucamediaDrm = true; } catch (e) {} };
   document.addEventListener('encrypted', mark, true);
   const p = window.HTMLMediaElement && HTMLMediaElement.prototype;
   if (p && p.setMediaKeys) {
@@ -748,7 +748,7 @@ try {
 /// Priorités : 0 bouton de lecture, 1 vidéo, 2 iframe, 3 lecteur / grande zone cliquable, 4-5 repli.
 const PLAY_JS: &str = r##"(() => {
   const ACT = __ACT__;
-  const out = { v: 0, p: 0, drm: !!window.__ursaDrm, vw: window.innerWidth, vh: window.innerHeight, t: [] };
+  const out = { v: 0, p: 0, drm: !!window.__lucamediaDrm, vw: window.innerWidth, vh: window.innerHeight, t: [] };
   const PLAY_BTN = ['.vjs-big-play-button', '.jw-icon-display', '.jw-display-icon-container', '.plyr__control--overlaid',
     '.ytp-large-play-button', '.vjs-play-control.vjs-paused', '[class*="big-play" i]', '[class*="play-button" i]',
     '[class*="playbutton" i]', '[class*="btn-play" i]', '[class*="play-btn" i]', '[aria-label*="play" i]',
@@ -807,7 +807,7 @@ const PLAY_JS: &str = r##"(() => {
           }
         } catch (e) {}
       });
-      if (doc.defaultView && doc.defaultView.__ursaDrm) out.drm = true;
+      if (doc.defaultView && doc.defaultView.__lucamediaDrm) out.drm = true;
     } catch (e) {}
   };
   visit(document, 0, 0, 0);

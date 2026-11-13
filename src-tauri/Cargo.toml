@@ -1,16 +1,16 @@
 [package]
-name = "ursa"
+name = "lucamedia"
 version = "1.0.1"
-description = "Ursa — téléchargeur de vidéos HLS/m3u8 avec vérification d'intégrité"
+description = "Lucamedia — téléchargeur de vidéos HLS/m3u8 avec vérification d'intégrité"
 edition = "2021"
 rust-version = "1.80"
 
 [lib]
-name = "ursa_lib"
+name = "lucamedia_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [[bin]]
-name = "ursa"
+name = "lucamedia"
 path = "src/main.rs"
 
 [build-dependencies]
@@ -39,6 +39,10 @@ tokio-tungstenite = "0.30"
 
 [dev-dependencies]
 tempfile = "3"
+
+[profile.dev]
+debug = 0
+incremental = false
 
 [profile.release]
 lto = "thin"

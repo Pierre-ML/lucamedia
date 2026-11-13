@@ -130,7 +130,7 @@ function assistBox(): HTMLElement {
   box.setAttribute('role', 'status');
   box.append(
     svgIcon('M3 5h18v14H3zM3 9h18M7 7h.01M10 7h.01', 'mt-0.5 size-5 shrink-0'),
-    el('p', '', "Une fenêtre de navigateur vient de s'ouvrir : lancez la lecture de la vidéo, Ursa la récupère automatiquement."),
+    el('p', '', "Une fenêtre de navigateur vient de s'ouvrir : lancez la lecture de la vidéo, Lucamedia la récupère automatiquement."),
   );
   return box;
 }
@@ -467,7 +467,7 @@ async function submit(e: Event): Promise<void> {
     return;
   }
   if (!state.tauri) {
-    toast("Le téléchargement n'est disponible que dans l'application Ursa.", 'err');
+    toast("Le téléchargement n'est disponible que dans l'application Lucamedia.", 'err');
     return;
   }
   const filename = $<HTMLInputElement>('add-filename').value.trim();

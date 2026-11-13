@@ -1458,7 +1458,7 @@ mod tests {
             eprintln!("SAUTÉ : ffmpeg/ffprobe absents du PATH");
             return;
         }
-        let dir = std::env::temp_dir().join(format!("ursa_verify_{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("lucamedia_verify_{}", std::process::id()));
         let _ = std::fs::create_dir_all(&dir);
         let p = |n: &str| dir.join(n).to_string_lossy().to_string();
         let (full, a, b, holed) = (p("full.mp4"), p("a.ts"), p("b.ts"), p("holed.mp4"));

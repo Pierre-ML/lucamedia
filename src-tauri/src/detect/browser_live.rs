@@ -581,7 +581,7 @@ async fn navigateur_reel_detecte_le_m3u8_local() {
             }
             match r.path.as_str() {
                 "/" => page(
-                    "Page de test Ursa",
+                    "Page de test Lucamedia",
                     &format!(
                         "<video id=v src=\"/hls/master.m3u8\" muted autoplay controls width=640 height=360></video>\
                          <script>{JS_LIB}\nsetTimeout(() => loadHls('/hls/master.m3u8'), 500);</script>"
@@ -600,7 +600,7 @@ async fn navigateur_reel_detecte_le_m3u8_local() {
     assert_eq!(media.kind, MediaKind::Hls);
     assert_eq!(media.url, format!("http://127.0.0.1:{}/hls/master.m3u8", site.ports[0]));
     assert_eq!(media.via, super::ResolvedVia::Browser);
-    assert_eq!(media.title.as_deref(), Some("Page de test Ursa"));
+    assert_eq!(media.title.as_deref(), Some("Page de test Lucamedia"));
     assert_eq!(media.http.referer.as_deref(), Some(page_url.as_str()));
     assert_eq!(media.http.user_agent, BROWSER_UA);
 
@@ -609,7 +609,7 @@ async fn navigateur_reel_detecte_le_m3u8_local() {
         .map(|d| {
             d.flatten()
                 .map(|e| e.file_name())
-                .filter(|n| n.to_string_lossy().starts_with("ursa-browser-") && !before.contains(n))
+                .filter(|n| n.to_string_lossy().starts_with("lucamedia-browser-") && !before.contains(n))
                 .collect()
         })
         .unwrap_or_default();
@@ -665,7 +665,7 @@ fn empty_site() -> impl FnOnce(&[u16]) -> Handler {
 async fn find_page(port: u16) -> Option<(Cdp, String)> {
     let needle = format!("127.0.0.1:{port}");
     for entry in std::fs::read_dir(std::env::temp_dir()).ok()?.flatten() {
-        if !entry.file_name().to_string_lossy().starts_with("ursa-browser-") {
+        if !entry.file_name().to_string_lossy().starts_with("lucamedia-browser-") {
             continue;
         }
         let Some(ws) = read_devtools_port(&entry.path()) else { continue };

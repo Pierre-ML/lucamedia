@@ -122,7 +122,7 @@ jobs:
         run: |
           d="src-tauri/target/release/bundle/release"
           missing=0
-          for f in "Ursa-Setup.exe" "Ursa-Update.exe"; do
+          for f in "Lucamedia-Setup.exe" "Lucamedia-Update.exe"; do
             if [ ! -f "$d/$f" ]; then
               echo "::error::Fichier manquant : $d/$f"
               missing=1
@@ -133,8 +133,8 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.version.outputs.version }}
-          name: Ursa v${{ needs.version.outputs.version }}
+          name: Lucamedia v${{ needs.version.outputs.version }}
           generate_release_notes: true
           files: |
-            src-tauri/target/release/bundle/release/Ursa-Setup.exe
-            src-tauri/target/release/bundle/release/Ursa-Update.exe
+            src-tauri/target/release/bundle/release/Lucamedia-Setup.exe
+            src-tauri/target/release/bundle/release/Lucamedia-Update.exe

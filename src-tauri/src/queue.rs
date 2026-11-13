@@ -368,7 +368,7 @@ pub fn init(app: &AppHandle) -> anyhow::Result<()> {
         .app_data_dir()
         .context("dossier de données introuvable")?;
     std::fs::create_dir_all(&data_dir)?;
-    let db = Db::open(&data_dir.join("ursa.db"))?;
+    let db = Db::open(&data_dir.join("lucamedia.db"))?;
     let resumed = db.reset_running().unwrap_or(0);
     let settings = Settings::load(&db);
     let dest_error = settings.ensure_dest_dir().err();

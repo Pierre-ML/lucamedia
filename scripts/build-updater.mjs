@@ -1,9 +1,9 @@
-// Compile l'exe de MISE À JOUR (Ursa_<version>_x64-update.exe) après `tauri build`.
+// Compile l'exe de MISE À JOUR (Lucamedia_<version>_x64-update.exe) après `tauri build`.
 //
 // tauri build rend notre template NSIS (src-tauri/windows/installer.nsi) dans
 // src-tauri/target/release/nsis/x64/installer.nsi (avec utils.nsh, les fichiers de langue, etc.)
 // et en tire le SETUP. Ce script recompile ce même script rendu avec /DMDL_UPDATER : le template
-// produit alors l'exe de mise à jour (pages Installation et Fin seulement, refus si Ursa n'est pas
+// produit alors l'exe de mise à jour (pages Installation et Fin seulement, refus si Lucamedia n'est pas
 // installé ou si une version plus récente l'est).
 //
 // Variables d'environnement facultatives (le comportement par défaut ne change pas sans elles) :
@@ -46,7 +46,7 @@ if (!isFile(script)) {
   fail(`script NSIS rendu introuvable : ${script}\n  Lancez d'abord « npm run tauri build » (ou « npm run desktop:build », qui enchaîne les deux).`);
 }
 const rendered = fs.readFileSync(script, 'utf8');
-// Rendu issu du template Ursa à jour (sinon l'exe produit serait un simple setup)
+// Rendu issu du template Lucamedia à jour (sinon l'exe produit serait un simple setup)
 if (!rendered.includes('MDL_UPDATER')) {
   fail('le script rendu ne gère pas MDL_UPDATER : il ne vient pas du template src-tauri/windows/installer.nsi à jour.\n  Relancez « npm run tauri build ».');
 }
@@ -73,7 +73,7 @@ if (!makensis) {
 }
 log(`  ${makensis}`);
 
-// 4. Compilation (mêmes options que tauri-bundler, plus les deux defines Ursa)
+// 4. Compilation (mêmes options que tauri-bundler, plus les deux defines Lucamedia)
 const outFile = path.join(outDir, `${productName}_${version}_x64-update.exe`);
 log(`4/4 Compilation de ${path.basename(outFile)}...`);
 fs.mkdirSync(outDir, { recursive: true });

@@ -103,7 +103,7 @@ pub(crate) mod testsrv {
 
     pub fn tempdir(tag: &str) -> std::path::PathBuf {
         let p = std::env::temp_dir().join(format!(
-            "ursa-hls-test-{tag}-{}-{}",
+            "lucamedia-hls-test-{tag}-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

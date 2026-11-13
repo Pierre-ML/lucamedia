@@ -12,7 +12,7 @@ const SETTINGS_KEY: &str = "settings";
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct Settings {
-    /// Dossier de destination (défaut : `<Vidéos>/Ursa`).
+    /// Dossier de destination (défaut : `<Vidéos>/Lucamedia`).
     pub dest_dir: String,
     /// Segments téléchargés en parallèle, 1..32.
     pub parallel_segments: u32,
@@ -38,12 +38,12 @@ impl Default for Settings {
     }
 }
 
-/// `<Vidéos>/Ursa`.
+/// `<Vidéos>/Lucamedia`.
 pub fn default_dest_dir() -> PathBuf {
     dirs::video_dir()
         .or_else(|| dirs::home_dir().map(|h| h.join("Videos")))
         .unwrap_or_else(|| PathBuf::from("."))
-        .join("Ursa")
+        .join("Lucamedia")
 }
 
 impl Settings {
@@ -89,7 +89,7 @@ mod tests {
         assert_eq!(s.max_retries, 5);
         assert_eq!(s.browser, BrowserChoice::Auto);
         assert!(!s.show_browser && s.verify_after_download && s.auto_repair);
-        assert!(PathBuf::from(&s.dest_dir).ends_with("Ursa"));
+        assert!(PathBuf::from(&s.dest_dir).ends_with("Lucamedia"));
     }
 
     #[test]
@@ -103,7 +103,7 @@ mod tests {
         .normalized();
         assert_eq!(s.parallel_segments, 32);
         assert_eq!(s.max_retries, 1);
-        assert!(s.dest_dir.ends_with("Ursa"));
+        assert!(s.dest_dir.ends_with("Lucamedia"));
         let s = Settings {
             parallel_segments: 0,
             max_retries: 99,
@@ -145,10 +145,10 @@ mod tests {
     fn ensure_dest_dir_creates_it() {
         let dir = tempfile::tempdir().unwrap();
         let s = Settings {
-            dest_dir: dir.path().join("a").join("Ursa").to_string_lossy().into_owned(),
+            dest_dir: dir.path().join("a").join("Lucamedia").to_string_lossy().into_owned(),
             ..Settings::default()
         };
         s.ensure_dest_dir().unwrap();
-        assert!(dir.path().join("a").join("Ursa").is_dir());
+        assert!(dir.path().join("a").join("Lucamedia").is_dir());
     }
 }
